@@ -1,0 +1,8 @@
+{
+	"name": "ts-liveserver",
+	"version": "0.0.0",
+	"description": "A HTTP-server that compiles TypeScript modules to es6-modules that is natively supported by browsers",
+	"engines": {
+		"node": ">=12.13"
+	}
+}
