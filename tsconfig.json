@@ -1,0 +1,16 @@
+{
+	"compilerOptions": {
+		"moduleResolution": "node",
+		"module": "CommonJS",
+		"target": "ES2020",
+		"esModuleInterop": true,
+		"sourceMap": true,
+		"noImplicitAny": true,
+		"strictNullChecks": true,
+		"tsBuildInfoFile": ".cache/tsc/tsbuildinfo",
+		"composite": true,
+		"incremental": true,
+		"jsx": "react",
+		"lib": ["es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "dom"]
+	}
+}

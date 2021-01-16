@@ -1,0 +1,12 @@
+name: My Action
+description: 'Do something'
+author: 'someone'
+runs:
+  using: 'composite'
+  steps:
+    - run: echo Hello ${{ inputs.message }}
+      shell: bash
+inputs:
+  message:
+    description: '`true` to create a draft (unpublished) release, `false` to create a published one. Default: `false`'
+    required: false
