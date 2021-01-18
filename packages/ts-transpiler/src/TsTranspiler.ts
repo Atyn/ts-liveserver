@@ -1,7 +1,7 @@
 import Fs from 'fs'
-import Path from 'path'
 import TypeScript from 'typescript'
-import ResolveFactory from './transformer-factories/ResolveFactory'
+import ResolveTransformer from './transformers/ResolveTransformer'
+import CommonJsTransformer from './transformers/CommonJsTransformer'
 
 const compilerOptions: TypeScript.CompilerOptions = {
 	allowJs: true,
@@ -16,7 +16,10 @@ const compilerOptions: TypeScript.CompilerOptions = {
 }
 
 const transformers: TypeScript.CustomTransformers = {
-	after: [ResolveFactory],
+	after: [
+		(context) => new CommonJsTransformer(context),
+		(context) => new ResolveTransformer(context),
+	],
 }
 
 export default class TsTranspiler {

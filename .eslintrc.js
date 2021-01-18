@@ -44,7 +44,7 @@ module.exports = {
 		'no-console': warn,
 		'no-unused-vars': warn,
 		'@typescript-eslint/no-unused-vars': off,
-		indent: indent,
+		indent: off,
 		'no-const-assign': warn,
 		'@typescript-eslint/no-unused-vars': off,
 		'@typescript-eslint/no-use-before-define': off,
