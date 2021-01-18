@@ -1,18 +1,10 @@
 import Express from 'express'
-import FileServer from './FileServer'
 import Path from 'path'
+import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
 
-const app = Express()
-const port = 8080
-const fileServer = new FileServer()
-app.listen(port, () => {
-	console.log('Server listening for port', port)
-})
+const tsTranspiler = new TsTranspiler()
 
-app.use(jsReturn)
-app.use(Express.static('.'))
-
-async function jsReturn(
+export default async function MiddleWare(
 	request: Express.Request,
 	response: Express.Response,
 	next: () => void,
@@ -23,7 +15,7 @@ async function jsReturn(
 		case '.js':
 		case '.jsx':
 			response.set({ 'Content-Type': 'application/javascript' })
-			response.send(await fileServer.getContent(request.path))
+			response.send(await tsTranspiler.getContent(request.path))
 			break
 		default:
 			return next()

@@ -5,6 +5,7 @@
 	"scripts": {
 		"postinstall": "lerna bootstrap --hoist",
 		"build": "lerna run build",
+		"clean": "git clean -Xdf",
 		"test": "lerna run test --parallel",
 		"lint": "eslint --max-warnings 0 --ignore-path .gitignore . && prettier --check --ignore-path .gitignore .",
 		"lint:fix": "eslint --fix --max-warnings 0 --ignore-path .gitignore . && prettier --write --ignore-path .gitignore ."
