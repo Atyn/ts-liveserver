@@ -20,16 +20,21 @@ const transformers: TypeScript.CustomTransformers = {
 }
 
 export default class TsTranspiler {
-	async getContent(path: string): Promise<Buffer | string> {
-		const filePath = Path.resolve('.' + path)
-		const buffer = await Fs.promises.readFile(filePath)
-		const results = await TypeScript.transpileModule(buffer.toString(), {
+	async transformCode(
+		code: string,
+		fileName: string,
+	): Promise<Buffer | string> {
+		const results = await TypeScript.transpileModule(code, {
 			compilerOptions: compilerOptions,
-			fileName: filePath,
+			fileName: fileName,
 			// reportDiagnostics: true,
 			// renamedDependencies: {},
 			transformers: transformers,
 		})
 		return results.outputText
+	}
+	async transformFile(fileName: string): Promise<Buffer | string> {
+		const buffer = await Fs.promises.readFile(fileName)
+		return this.transformCode(buffer.toString(), fileName)
 	}
 }

@@ -1,4 +1,3 @@
-import Fs from 'fs'
 import Path from 'path'
 import TypeScript from 'typescript'
 

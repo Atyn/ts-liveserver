@@ -15,7 +15,8 @@ export default async function MiddleWare(
 		case '.js':
 		case '.jsx':
 			response.set({ 'Content-Type': 'application/javascript' })
-			response.send(await tsTranspiler.getContent(request.path))
+			const fileName = Path.resolve('.' + request.path)
+			response.send(await tsTranspiler.transformFile(fileName))
 			break
 		default:
 			return next()
