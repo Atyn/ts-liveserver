@@ -7,6 +7,7 @@ export default class ResolveTransformer implements TypeScript.CustomTransformer 
   	this.context = context
   }
   private resolvePath(a: string, b: string) {
+  	console.log(a, b);
   	const filePath = a
   	const dependencyFilePath = require.resolve(b, {
   		paths: [Path.dirname(filePath)],
@@ -25,18 +26,19 @@ export default class ResolveTransformer implements TypeScript.CustomTransformer 
   		TypeScript.isStringLiteral(node) &&
       TypeScript.isImportDeclaration(node.parent)
   	) {
-  		console.log(node.getSourceFile().fileName, node.text);
   		return TypeScript.factory.createStringLiteral(
   			this.resolvePath(node.getSourceFile().fileName, node.text)
   		)
   	}
   	return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)
   }
-  transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {    
-  /*
-    console.log(
-  		node.resolvedModules
-    )
+  transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {  
+  	/*  
+  	if(node['resolvedModules']) {
+  		console.log(
+  			node.resolvedModules
+  		)
+    }
     */
   	return TypeScript.visitNode(node, this.visit.bind(this))
   }
