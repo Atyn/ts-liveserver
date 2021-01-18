@@ -1,20 +1,17 @@
-A HTTP-server that compiles TypeScript modules to es6-modules that can run in browser.
+A HTTP-server that can serve TypeScript code and compiles just-in-time to ES6 and reports errors as they are encountered.
 
-Also handles CommonJS and all ES6-import syntax.
 ## Start server
 
 ```bash
-live-server
+npx ts-liveserver
 ```
 
 ## Open web browser
 
 ```html
-
 <head></head>
 <body></body>
 <script type="module">
-   import './App.js';
+	import './App.js'
 </script>
-
 ```
