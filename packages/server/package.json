@@ -2,7 +2,9 @@
 	"name": "@ts-liveserver/server",
 	"version": "0.0.0",
 	"main": "dist/index.js",
-	"bin": "dist/main.js",
+	"bin": {
+		"ts-liveserver": "dist/main.js"
+	},
 	"scripts": {
 		"build": "tsc"
 	},

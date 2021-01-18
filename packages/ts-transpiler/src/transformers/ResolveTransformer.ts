@@ -31,13 +31,6 @@ export default class ResolveTransformer
 		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)
 	}
 	transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {
-		/*  
-  	if(node['resolvedModules']) {
-  		console.log(
-  			node.resolvedModules
-  		)
-    }
-    */
 		return TypeScript.visitNode(node, this.visit.bind(this))
 	}
 	transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
