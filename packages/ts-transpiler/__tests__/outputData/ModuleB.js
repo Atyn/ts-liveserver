@@ -1,1 +1,1 @@
-export default 'ModuleB';
+export default "ModuleB";

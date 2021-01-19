@@ -1,5 +1,6 @@
 import Express from 'express'
 import Path from 'path'
+import Fs from 'fs'
 import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
 
 export default class MiddleWare {
@@ -12,20 +13,47 @@ export default class MiddleWare {
 		request: Express.Request,
 		response: Express.Response,
 		next: () => void,
-	) {
+	): Promise<void> {
 		switch (Path.extname(request.path)) {
-			case '.tsx':
-			case '.ts':
 			case '.js':
 			case '.jsx':
-				response.set({ 'Content-Type': 'application/javascript' })
+			case '.tsx':
+			case '.ts': {
 				const fileName = Path.resolve(this.path + request.path)
-				response.send(await this.tsTranspiler.transformFile(fileName))
+				console.log(fileName)
+				if (await this.fileExists(fileName)) {
+					const info = await Fs.promises.stat(fileName)
+					response.set({
+						'Content-Type': 'application/javascript',
+						etag: info.mtime,
+					})
+					response.send(await this.tsTranspiler.transformFile(fileName))
+				} else if (!(await this.fileExists(fileName))) {
+					const typeScriptFilenName = fileName.replace(
+						Path.extname(fileName),
+						'.js',
+					)
+					console.log(typeScriptFilenName)
+					if (await this.fileExists(typeScriptFilenName)) {
+						response.redirect(
+							request.path.replace(Path.extname(request.path), '.ts'),
+						)
+					}
+					next()
+				}
 				break
+			}
 			default:
-				return next()
+				next()
 		}
-		return undefined
+	}
+	async fileExists(path: string) {
+		try {
+			await Fs.promises.readFile(path)
+		} catch (error) {
+			return false
+		}
+		return true
 	}
 }
 

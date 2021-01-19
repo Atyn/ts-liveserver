@@ -12,5 +12,5 @@ app.listen(port, () => {
 	console.log('Server listening for port', port)
 })
 
-app.use(middleWare.onRequest)
+app.use(middleWare.onRequest.bind(middleWare))
 app.use(Express.static(path))

@@ -1,1 +1,2 @@
-console.log('Hello world!')
+import AnotherModule from './AnotherModule'
+document.body.innerHTML = AnotherModule

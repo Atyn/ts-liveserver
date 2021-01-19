@@ -5,6 +5,7 @@
 	"scripts": {
 		"build": "tsc",
 		"watch": "tsc --watch",
+		"test:watch": "jest --watch",
 		"test": "jest"
 	},
 	"devDependencies": {
