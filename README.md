@@ -15,3 +15,7 @@ npx ts-liveserver
 	import './App.js'
 </script>
 ```
+
+## Source maps
+
+Sourcemaps are also compiled when requested by browser
