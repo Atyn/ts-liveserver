@@ -6,7 +6,8 @@
 		"ts-liveserver": "dist/main.js"
 	},
 	"scripts": {
-		"build": "tsc"
+		"build": "tsc",
+		"watch": "tsc --watch"
 	},
 	"devDependencies": {
 		"@types/express": "^4.17.9",

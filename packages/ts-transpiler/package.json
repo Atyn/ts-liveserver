@@ -4,6 +4,7 @@
 	"main": "dist/index.js",
 	"scripts": {
 		"build": "tsc",
+		"watch": "tsc --watch",
 		"test": "jest"
 	},
 	"devDependencies": {
