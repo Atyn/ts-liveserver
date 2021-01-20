@@ -1,3 +1,6 @@
-module.exports = require("../../.prettierrc.js");
-module.exports.semi = true;
-module.exports.singleQuote = false;
+module.exports = {
+	trailingComma: "all",
+	useTabs: true,
+	semi: true,
+	singleQuote: false,
+}

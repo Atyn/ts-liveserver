@@ -1,3 +1,4 @@
-import ModuleB from "./ModuleB.js";
-var ModuleA = ModuleB;
+import ModuleB from "./ModuleB.ts";
+const ModuleA = ModuleB;
 export default ModuleA;
+//# sourceMappingURL=ModuleA.js.map

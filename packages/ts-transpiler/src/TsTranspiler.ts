@@ -10,9 +10,11 @@ const compilerOptions: TypeScript.CompilerOptions = {
 	noResolve: false,
 	esModuleInterop: true,
 	skipLibCheck: false,
+	target: TypeScript.ScriptTarget.Latest,
 	declaration: false,
 	module: TypeScript.ModuleKind.ES2020,
 	moduleResolution: TypeScript.ModuleResolutionKind.NodeJs,
+	sourceMap: true,
 }
 
 const transformers: TypeScript.CustomTransformers = {
