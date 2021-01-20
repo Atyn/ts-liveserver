@@ -1,5 +1,5 @@
-import TypeScript from "typescript";
-import Path from "path";
+import TypeScript from 'typescript'
+import Path from 'path'
 /*
 class ModuleResolutionHost implements TypeScript.ModuleResolutionHost {
 	fileExists(fileName: string): boolean
@@ -14,36 +14,52 @@ class ModuleResolutionHost implements TypeScript.ModuleResolutionHost {
 
 export default class ResolveTransformer
 	implements TypeScript.CustomTransformer {
-	private context: TypeScript.TransformationContext;
-	private moduleResolutionHost: TypeScript.ModuleResolutionHost;
+	private context: TypeScript.TransformationContext
+	private moduleResolutionHost: TypeScript.ModuleResolutionHost
 	constructor(context: TypeScript.TransformationContext) {
-		this.context = context;
+		this.context = context
 		this.moduleResolutionHost = TypeScript.createCompilerHost(
 			this.context.getCompilerOptions(),
-		);
+		)
 	}
-	private resolvePath(a: string, b: string) {
+	// Return e.g. ./hello/module.js
+	private resolveDependencyName(
+		parentPath: string,
+		dendencyName: string,
+	): string {
+		const absolutePath = this.resolveDependencyPath(parentPath, dendencyName)
+		const pathObj = Path.parse(absolutePath)
+		const relativeDir =
+			Path.relative(Path.dirname(parentPath), pathObj.dir) || '.'
+		return relativeDir + '/' + pathObj.name + pathObj.ext
+	}
+	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
+	private resolveDependencyPath(
+		parentPath: string,
+		dendencyName: string,
+	): string {
 		const resolveResults = TypeScript.resolveModuleName(
-			b,
-			a,
+			dendencyName,
+			parentPath,
 			this.context.getCompilerOptions(),
 			this.moduleResolutionHost,
-		);
-		const resolvedFileName = resolveResults?.resolvedModule?.resolvedFileName;
-		if (!resolvedFileName) {
-			throw new Error("Could not resolve" + b + "from module" + a);
+		)
+		if (resolveResults?.resolvedModule?.isExternalLibraryImport) {
+			const nodeResolve = require.resolve(dendencyName, {
+				paths: [Path.dirname(parentPath)],
+			})
+			if (nodeResolve) {
+				console.log(nodeResolve)
+				return nodeResolve
+			}
 		}
-		const filePath = a;
-		/*
-		const dependencyFilePath = require.resolve(b, {
-			paths: [Path.dirname(filePath)],
-		})
-		*/
-		const dependencyFilePath = resolvedFileName;
-		const pathObj = Path.parse(dependencyFilePath);
-		const relativeDir =
-			Path.relative(Path.dirname(filePath), pathObj.dir) || ".";
-		return relativeDir + "/" + pathObj.name + pathObj.ext;
+		const resolvedFileName = resolveResults?.resolvedModule?.resolvedFileName
+		if (!resolvedFileName) {
+			throw new Error(
+				'Could not resolve' + dendencyName + 'from module' + parentPath,
+			)
+		}
+		return resolvedFileName
 	}
 	private visit(node: TypeScript.Node) {
 		if (
@@ -51,15 +67,15 @@ export default class ResolveTransformer
 			TypeScript.isImportDeclaration(node.parent)
 		) {
 			return TypeScript.factory.createStringLiteral(
-				this.resolvePath(node.getSourceFile().fileName, node.text),
-			);
+				this.resolveDependencyName(node.getSourceFile().fileName, node.text),
+			)
 		}
-		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context);
+		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)
 	}
 	transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {
-		return TypeScript.visitNode(node, this.visit.bind(this));
+		return TypeScript.visitNode(node, this.visit.bind(this))
 	}
 	transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
-		return node;
+		return node
 	}
 }

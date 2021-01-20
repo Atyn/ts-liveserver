@@ -20,7 +20,6 @@ export default class MiddleWare {
 			case '.tsx':
 			case '.ts': {
 				const fileName = Path.resolve(this.path + request.path)
-				console.log(fileName)
 				if (await this.fileExists(fileName)) {
 					const info = await Fs.promises.stat(fileName)
 					response.set({
@@ -33,7 +32,6 @@ export default class MiddleWare {
 						Path.extname(fileName),
 						'.js',
 					)
-					console.log(typeScriptFilenName)
 					if (await this.fileExists(typeScriptFilenName)) {
 						response.redirect(
 							request.path.replace(Path.extname(request.path), '.ts'),

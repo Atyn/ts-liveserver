@@ -3,7 +3,7 @@
 	"private": true,
 	"version": "0.0.0",
 	"scripts": {
-		"test-environment:serve": "ts-liveserver ./src"
+		"test-environment:serve": "ts-liveserver ../../"
 	},
 	"devDependencies": {
 		"@ts-liveserver/server": "^0.0.0",
