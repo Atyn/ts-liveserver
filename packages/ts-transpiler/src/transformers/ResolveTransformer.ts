@@ -63,6 +63,7 @@ export default class ResolveTransformer
 	}
 	private visit(node: TypeScript.Node) {
 		if (
+			node.parent &&
 			TypeScript.isStringLiteral(node) &&
 			TypeScript.isImportDeclaration(node.parent)
 		) {

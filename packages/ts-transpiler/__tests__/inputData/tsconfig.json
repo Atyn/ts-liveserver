@@ -1,0 +1,14 @@
+{
+	"compilerOptions": {
+		"allowJs": true,
+		"strictNullChecks": false,
+		"checkJs": false,
+		"jsxImportSource": "react",
+		"jsxFragmentFactory": "React.Fragment",
+		"jsxFactory": "React.createElement",
+		"outDir": "./dist",
+		"rootDir": "./src",
+		"baseUrl": "."
+	},
+	"include": ["src", "src/**/*.json", "src/*.json"]
+}

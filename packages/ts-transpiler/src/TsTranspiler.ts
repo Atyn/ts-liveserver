@@ -5,7 +5,13 @@ import CommonJsTransformer from './transformers/CommonJsTransformer'
 
 const compilerOptions: TypeScript.CompilerOptions = {
 	allowJs: true,
-	jsxFactory: 'react',
+	jsx: TypeScript.JsxEmit.React,
+	/*
+	jsx: TypeScript.JsxEmit.React,
+	jsxImportSource: 'react',
+	jsxFragmentFactory: 'React.Fragment',
+	jsxFactory: 'React.createElement',
+	*/
 	checkJs: false,
 	noResolve: false,
 	esModuleInterop: true,
