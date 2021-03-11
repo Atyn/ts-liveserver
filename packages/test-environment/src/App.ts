@@ -1,8 +1,17 @@
-import AnotherModule from "./AnotherModule";
-document.body.innerHTML = AnotherModule;
+window.process = window.process || {
+	env: null,
+}
 
-import React from "react";
-import ReactDOM from "react-dom";
-import Component from "./Component";
+import TestContent from './ReactIndex.js'
+console.log(TestContent)
 
-ReactDOM.render(React.createElement(Component, {}), document.body);
+/*
+import AnotherModule from './AnotherModule'
+document.body.innerHTML = AnotherModule
+
+import React from 'react'
+import ReactDOM from 'react-dom'
+import Component from './Component'
+
+ReactDOM.render(React.createElement(Component, {}), document.body)
+*/

@@ -5,6 +5,7 @@
 		"rootDir": "./src",
 		"jsx": "react",
 		"tsBuildInfoFile": "tmp/tsbuildinfo",
+		"noImplicitAny": false,
 		"baseUrl": "."
 	},
 	"include": ["src", "src/**/*.json", "src/*.json"]
