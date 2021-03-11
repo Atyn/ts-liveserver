@@ -49,7 +49,8 @@ export default class ResolveTransformer
 				paths: [Path.dirname(parentPath)],
 			})
 			if (nodeResolve) {
-				console.log(nodeResolve)
+				// disable-eslint no-console
+				console.error(nodeResolve)
 				return nodeResolve
 			}
 		}
@@ -65,7 +66,8 @@ export default class ResolveTransformer
 		if (
 			node.parent &&
 			TypeScript.isStringLiteral(node) &&
-			TypeScript.isImportDeclaration(node.parent)
+			(TypeScript.isExportDeclaration(node.parent) ||
+				TypeScript.isImportDeclaration(node.parent))
 		) {
 			return TypeScript.factory.createStringLiteral(
 				this.resolveDependencyName(node.getSourceFile().fileName, node.text),
