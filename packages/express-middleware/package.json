@@ -1,5 +1,6 @@
 {
 	"name": "@ts-liveserver/express-middleware",
+	"private": true,
 	"version": "0.0.0",
 	"main": "dist/MiddleWare.js",
 	"scripts": {

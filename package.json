@@ -7,7 +7,7 @@
 		"build": "lerna run build",
 		"watch": "lerna run watch --parallel",
 		"clean": "git clean -Xdf",
-		"test": "lerna run test --parallel",
+		"test": "lerna run test --stream",
 		"test-environment:serve": "lerna run test-environment:serve --stream",
 		"lint": "eslint --max-warnings 0 --ignore-path .gitignore . && prettier --check --ignore-path .gitignore .",
 		"lint:fix": "eslint --fix --max-warnings 0 --ignore-path .gitignore . && prettier --write --ignore-path .gitignore ."

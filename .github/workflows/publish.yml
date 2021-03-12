@@ -1,0 +1,21 @@
+name: Publish
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '1.2.3'
+        required: true
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: npm ci
+      - run: npm run build
+      - name: set npm token
+        run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" > ./.npmrc
+      - name: 'publish'
+        run: |
+          cd packages/ts-transpiler
+          npm version v${{ github.event.inputs.version }}
+          npm publish
