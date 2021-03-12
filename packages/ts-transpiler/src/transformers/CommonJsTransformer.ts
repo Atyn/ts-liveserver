@@ -79,7 +79,26 @@ export default class CommonJsTransformer
 				}
 			}
 		}
-		// Default export
+
+		// exports.default = Hello;
+		if (
+			TypeScript.isExpressionStatement(node) &&
+			TypeScript.isBinaryExpression(node.expression) &&
+			TypeScript.isPropertyAccessExpression(node.expression.left) &&
+			TypeScript.isIdentifier(node.expression.left.expression) &&
+			TypeScript.isIdentifier(node.expression.left.name) &&
+			node.expression.left.name.getText() === 'default' &&
+			node.expression.left.expression.getText() === 'exports'
+		) {
+			return TypeScript.factory.createExportAssignment(
+				undefined,
+				undefined,
+				undefined,
+				node.expression.right,
+			)
+		}
+
+		// module.exports = Hello;
 		if (
 			TypeScript.isExpressionStatement(node) &&
 			TypeScript.isBinaryExpression(node.expression) &&
@@ -96,6 +115,31 @@ export default class CommonJsTransformer
 				node.expression.right,
 			)
 		}
+
+		// module.exports.default = Hello;
+		if (
+			TypeScript.isExpressionStatement(node) &&
+			TypeScript.isBinaryExpression(node.expression) &&
+			TypeScript.isPropertyAccessExpression(node.expression.left) &&
+			TypeScript.isIdentifier(node.expression.left.expression) &&
+			TypeScript.isIdentifier(node.expression.left.name) &&
+			node.expression.left.expression.getText() === 'exports' &&
+			TypeScript.isIdentifier(node.expression.left.name) &&
+			TypeScript.isIdentifier(node.expression.right)
+		) {
+			return TypeScript.factory.createExportDeclaration(
+				undefined,
+				undefined,
+				false,
+				TypeScript.factory.createNamedExports([
+					TypeScript.factory.createExportSpecifier(
+						node.expression.right,
+						node.expression.left.name,
+					),
+				]),
+			)
+		}
+
 		return node
 	}
 	transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {
