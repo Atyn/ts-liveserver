@@ -1,4 +1,4 @@
-import TypeScript from 'typescript'
+import * as TypeScript from 'typescript'
 
 /*
 Transpile CommonJS to ES6 module
@@ -15,7 +15,7 @@ export default class CommonJsTransformer
 			TypeScript.isExpressionStatement(node) &&
 			TypeScript.isCallExpression(node.expression) &&
 			TypeScript.isIdentifier(node.expression.expression) &&
-			node.expression.expression.getText() === 'require' &&
+			node.expression.expression.text === 'require' &&
 			node.expression.arguments.length === 1
 		) {
 			const argument = node.expression.arguments[0]
@@ -41,7 +41,7 @@ export default class CommonJsTransformer
 				declaration.initializer &&
 				TypeScript.isCallExpression(declaration.initializer) &&
 				TypeScript.isIdentifier(declaration.initializer.expression) &&
-				declaration.initializer.expression.getText() === 'require' &&
+				declaration.initializer.expression.text === 'require' &&
 				declaration.initializer.arguments.length === 1
 			) {
 				const argument = declaration.initializer.arguments[0]

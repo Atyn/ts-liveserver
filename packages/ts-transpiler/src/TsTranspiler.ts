@@ -1,5 +1,5 @@
-import Fs from 'fs'
-import TypeScript from 'typescript'
+import * as Fs from 'fs'
+import * as TypeScript from 'typescript'
 import ResolveTransformer from './transformers/ResolveTransformer'
 import CommonJsTransformer from './transformers/CommonJsTransformer'
 
@@ -20,7 +20,7 @@ const compilerOptions: TypeScript.CompilerOptions = {
 	declaration: false,
 	module: TypeScript.ModuleKind.ES2020,
 	moduleResolution: TypeScript.ModuleResolutionKind.NodeJs,
-	sourceMap: true,
+	sourceMap: false,
 }
 
 const transformers: TypeScript.CustomTransformers = {
