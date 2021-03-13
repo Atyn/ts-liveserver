@@ -42,7 +42,7 @@ export default class TsTranspiler {
 			// renamedDependencies: {},
 			transformers: transformers,
 		})
-		return results.outputText
+		return results.outputText.toString().replace('export {}', 'export default {}')
 	}
 	async transformFile(fileName: string): Promise<Buffer | string> {
 		const buffer = await Fs.promises.readFile(fileName)
