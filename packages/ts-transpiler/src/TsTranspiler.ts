@@ -3,6 +3,7 @@ import TypeScript from 'typescript'
 import ResolveTransformer from './transformers/ResolveTransformer'
 import CommonJsTransformer from './transformers/CommonJsTransformer'
 import NodeEnvTransformer from './transformers/NodeEnvTransformer'
+import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
 
 const compilerOptions: TypeScript.CompilerOptions = {
 	allowJs: true,
@@ -25,7 +26,10 @@ const compilerOptions: TypeScript.CompilerOptions = {
 }
 
 const transformers: TypeScript.CustomTransformers = {
-	before: [(context) => new NodeEnvTransformer(context)],
+	before: [
+		(context) => new NodeEnvTransformer(context),
+		(context) => new CodeOptimizerTransformer(context),
+	],
 	after: [
 		(context) => new CommonJsTransformer(context),
 		(context) => new ResolveTransformer(context),
