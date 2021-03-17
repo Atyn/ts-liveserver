@@ -9,7 +9,42 @@ export default class CommonJsTransformer
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context
 	}
-	private visit(node: TypeScript.Node) {
+	private visit(node: TypeScript.Node): TypeScript.Node {
+		// Forward
+		if (
+			TypeScript.isExpressionStatement(node) &&
+			TypeScript.isBinaryExpression(node.expression) &&
+			node.expression.operatorToken.kind ===
+				TypeScript.SyntaxKind.EqualsToken &&
+			TypeScript.isPropertyAccessExpression(node.expression.left) &&
+			node.expression.left.name.getText() === 'exports' &&
+			node.expression.left.expression.getText() === 'module' &&
+			TypeScript.isCallExpression(node.expression.right) &&
+			TypeScript.isIdentifier(node.expression.right.expression) &&
+			node.expression.right.expression.getText() === 'require' &&
+			node.expression.right.arguments.length > 0 &&
+			TypeScript.isStringLiteral(node.expression.right.arguments[0])
+		) {
+			return TypeScript.factory.createExportDeclaration(
+				undefined,
+				undefined,
+				false,
+				undefined, // Wildcard
+				node.expression.right.arguments[0],
+			)
+			/*
+			return TypeScript.factory.createExportDeclaration(
+				undefined,
+				undefined,
+				false,
+				TypeScript.factory.createNamedExports([
+					TypeScript.factory.createExportSpecifier('*', 'default'),
+				]),
+				node.expression.right.arguments[0],
+			)
+			*/
+		}
+
 		// Import
 		if (
 			TypeScript.isExpressionStatement(node) &&
