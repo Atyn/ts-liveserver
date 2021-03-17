@@ -24,7 +24,7 @@ export default class MiddleWare {
 					const info = await Fs.promises.stat(fileName)
 					response.set({
 						'Content-Type': 'application/javascript',
-						etag: info.mtime,
+						ETag: info.mtimeMs,
 					})
 					response.send(await this.tsTranspiler.transformFile(fileName))
 				} else if (!(await this.fileExists(fileName))) {
