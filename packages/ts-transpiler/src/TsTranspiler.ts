@@ -2,6 +2,7 @@ import Fs from 'fs'
 import TypeScript from 'typescript'
 import ResolveTransformer from './transformers/ResolveTransformer'
 import CommonJsTransformer from './transformers/CommonJsTransformer'
+import NodeEnvTransformer from './transformers/NodeEnvTransformer'
 
 const compilerOptions: TypeScript.CompilerOptions = {
 	allowJs: true,
@@ -24,6 +25,7 @@ const compilerOptions: TypeScript.CompilerOptions = {
 }
 
 const transformers: TypeScript.CustomTransformers = {
+	before: [(context) => new NodeEnvTransformer(context)],
 	after: [
 		(context) => new CommonJsTransformer(context),
 		(context) => new ResolveTransformer(context),
