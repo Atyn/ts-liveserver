@@ -40,7 +40,7 @@ export default class TsTranspiler {
 	async transformCode(
 		code: string,
 		fileName: string,
-	): Promise<Buffer | string> {
+	): Promise<TypeScript.TranspileOutput> {
 		const results = TypeScript.transpileModule(code, {
 			compilerOptions: compilerOptions,
 			fileName: fileName,
@@ -50,9 +50,9 @@ export default class TsTranspiler {
 		if (results.diagnostics?.length) {
 			console.log(results.diagnostics)
 		}
-		return results.outputText
+		return results
 	}
-	async transformFile(fileName: string): Promise<Buffer | string> {
+	async transformFile(fileName: string): Promise<TypeScript.TranspileOutput> {
 		const buffer = await Fs.promises.readFile(fileName)
 		return this.transformCode(buffer.toString(), fileName)
 	}

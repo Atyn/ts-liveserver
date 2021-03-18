@@ -26,7 +26,9 @@ export default class MiddleWare {
 						'Content-Type': 'application/javascript',
 						ETag: info.mtimeMs,
 					})
-					response.send(await this.tsTranspiler.transformFile(fileName))
+					response.send(
+						(await this.tsTranspiler.transformFile(fileName)).outputText,
+					)
 				} else if (!(await this.fileExists(fileName))) {
 					const typeScriptFilenName = fileName.replace(
 						Path.extname(fileName),
