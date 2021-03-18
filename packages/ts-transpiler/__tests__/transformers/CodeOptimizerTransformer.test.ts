@@ -2,11 +2,46 @@ import CodeOptimizerTransformer from '../../src/transformers/CodeOptimizerTransf
 import TypeScript from 'typescript'
 
 describe('CodeOptimizerTransformer', () => {
-	it('Should remove if statement', async () => {
+	it('Create booleans of statements', async () => {
+		process.env.NODE_ENV = 'development'
+		const input = '"a" === "b"'
+		const output = 'false'
+		expect(await transformWithPlugin(input)).toBe(
+			await transformWithoutPlugin(output),
+		)
+	})
+	it('Should remove if it is the same', async () => {
 		process.env.NODE_ENV = 'development'
 		const input =
 			'if ("astring" === "astring") { console.log("hello"); } else { console.log("never happens")}'
 		const output = 'console.log("hello")'
+		expect(await transformWithPlugin(input)).toBe(
+			await transformWithoutPlugin(output),
+		)
+	})
+	it('Should remove if statement if it is never the same', async () => {
+		process.env.NODE_ENV = 'development'
+		const input =
+			'if ("something else" === "astring") { console.log("hello"); } else { console.log("always happens")}'
+		const output = 'console.log("always happens")'
+		expect(await transformWithPlugin(input)).toBe(
+			await transformWithoutPlugin(output),
+		)
+	})
+	it('Should empty functions in root scope', async () => {
+		process.env.NODE_ENV = 'development'
+		const input = '(function () { console.log("yoyo") })();'
+		const output = 'console.log("yoyo")'
+		expect(await transformWithPlugin(input)).toBe(
+			await transformWithoutPlugin(output),
+		)
+	})
+	it('Should combine optimizations', async () => {
+		process.env.NODE_ENV = 'development'
+		const input = `(function () {
+			"a" === "b";
+		})();`
+		const output = 'false'
 		expect(await transformWithPlugin(input)).toBe(
 			await transformWithoutPlugin(output),
 		)

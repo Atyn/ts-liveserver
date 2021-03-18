@@ -17,7 +17,7 @@ const compilerOptions: TypeScript.CompilerOptions = {
 	checkJs: false,
 	noResolve: false,
 	esModuleInterop: true,
-	skipLibCheck: true,
+	skipLibCheck: false,
 	target: TypeScript.ScriptTarget.ES2020,
 	declaration: false,
 	module: TypeScript.ModuleKind.ES2020,
@@ -41,13 +41,15 @@ export default class TsTranspiler {
 		code: string,
 		fileName: string,
 	): Promise<Buffer | string> {
-		const results = await TypeScript.transpileModule(code, {
+		const results = TypeScript.transpileModule(code, {
 			compilerOptions: compilerOptions,
 			fileName: fileName,
-			// reportDiagnostics: true,
-			// renamedDependencies: {},
+			reportDiagnostics: true,
 			transformers: transformers,
 		})
+		if (results.diagnostics?.length) {
+			console.log(results.diagnostics)
+		}
 		return results.outputText
 	}
 	async transformFile(fileName: string): Promise<Buffer | string> {

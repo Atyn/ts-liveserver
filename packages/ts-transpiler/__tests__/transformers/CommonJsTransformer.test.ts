@@ -37,6 +37,11 @@ describe('CommonJsTransformer', () => {
 		const output = 'export default Hello;'
 		expect(await transform(input)).toBe(output)
 	})
+	it('Should convert redirects', async () => {
+		const input = 'module.exports = require("./hello.js");'
+		const output = 'export * from "./hello.js";'
+		expect(await transform(input)).toBe(output)
+	})
 	/*
 	it('Should convert to default export', async () => {
 		const input = 'module.exports.hello = Hello;'

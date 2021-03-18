@@ -62,12 +62,43 @@ export default class ResolveTransformer
 		}
 		return resolvedFileName
 	}
+	private visitModuleSpecifier(node: TypeScript.StringLiteral) {
+		console.log(node.text)
+		return TypeScript.factory.createStringLiteral(
+			this.resolveDependencyName(node.getSourceFile().fileName, node.text),
+		)
+	}
 	private visit(node: TypeScript.Node) {
+		/*
 		if (
-			node.parent &&
+			(TypeScript.isExportDeclaration(node) ||
+				TypeScript.isImportDeclaration(node)) &&
+			node.moduleSpecifier &&
+			TypeScript.isStringLiteral(node.moduleSpecifier)
+		) {
+			return TypeScript.visitEachChild(
+				node,
+				this.visitModuleSpecifier.bind(this),
+				this.context,
+			)
+		}
+		*/
+		/*
+		if (
+			node.getSourceFile()?.fileName ===
+			'/home/anton/gitProjects/developeranton/ts-liveserver/node_modules/react-dom/cjs/react-dom.development.js'
+		) {
+			if ('moduleSpecifier' in node) {
+				console.log('aaa')
+			}
+		}
+		*/
+		if (
 			TypeScript.isStringLiteral(node) &&
+			node.parent &&
 			(TypeScript.isExportDeclaration(node.parent) ||
-				TypeScript.isImportDeclaration(node.parent))
+				TypeScript.isImportDeclaration(node.parent)) &&
+			node.parent.moduleSpecifier
 		) {
 			return TypeScript.factory.createStringLiteral(
 				this.resolveDependencyName(node.getSourceFile().fileName, node.text),
@@ -76,6 +107,19 @@ export default class ResolveTransformer
 		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)
 	}
 	transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {
+		console.log('--', node.getSourceFile().fileName)
+		if (
+			node.fileName ===
+			'/home/anton/gitProjects/developeranton/ts-liveserver/node_modules/react-dom/cjs/react-dom.development.js'
+		) {
+			for (const n of node.statements) {
+				if (TypeScript.isImportDeclaration(n)) {
+					console.log('kind', n.moduleSpecifier)
+
+					// console.log(n.moduleSpecifier.getText())
+				}
+			}
+		}
 		return TypeScript.visitNode(node, this.visit.bind(this))
 	}
 	transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {

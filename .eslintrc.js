@@ -46,6 +46,7 @@ module.exports = {
 		'@typescript-eslint/no-unused-vars': off,
 		indent: off,
 		'no-const-assign': warn,
+		'no-use-before-define': off,
 		'@typescript-eslint/no-unused-vars': off,
 		'@typescript-eslint/no-use-before-define': off,
 		'@typescript-eslint/member-delimiter-style': off,
