@@ -1,7 +1,5 @@
 import ModuleB from './ModuleB'
-
 const component = <div>Hello</div>
-component
+console.log(component)
 const ModuleA: string = ModuleB
-
 export default ModuleA

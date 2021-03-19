@@ -15,7 +15,7 @@ const compilerOptions: TypeScript.CompilerOptions = {
 	jsxFactory: 'React.createElement',
 	*/
 	checkJs: false,
-	noResolve: false,
+	noResolve: true,
 	esModuleInterop: true,
 	skipLibCheck: false,
 	target: TypeScript.ScriptTarget.ES2020,
