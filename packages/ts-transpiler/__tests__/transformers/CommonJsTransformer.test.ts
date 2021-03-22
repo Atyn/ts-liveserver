@@ -49,6 +49,13 @@ describe('CommonJsTransformer', () => {
 				await transformWithoutPlugin(output),
 			)
 		})
+		it('Should convert exports.name with same name as the parameter', async () => {
+			const input = 'const hello = null; exports.hello = hello'
+			const output = 'const hello = null; export { hello }'
+			expect(await transformWithPlugin(input)).toBe(
+				await transformWithoutPlugin(output),
+			)
+		})
 		it('Should convert exports.default', async () => {
 			const input = 'exports.default = Hello'
 			const output = 'export default Hello'
@@ -56,16 +63,15 @@ describe('CommonJsTransformer', () => {
 				await transformWithoutPlugin(output),
 			)
 		})
-		/*
 		it('Should convert define.property with getter', async () => {
 			const input =
 				'Object.defineProperty(exports, "hello", { enumerable: true, get: function () { return parts_js_1.PropertyPart; } });'
-			const output = 'export { parts_js_1.PropertyPart as hello };'
+			const output =
+				'var GENERATED_VAR_BY_TRANSFORMER_1 = parts_js_1.PropertyPart; export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };'
 			expect(await transformWithPlugin(input)).toBe(
 				await transformWithoutPlugin(output),
 			)
 		})
-		*/
 		it('Should convert define.property for identifier', async () => {
 			const input = 'Object.defineProperty(exports, "a", b });'
 			const output = 'export { b as a };'
@@ -105,7 +111,7 @@ const compilerOptions: TypeScript.CompilerOptions = {
 }
 
 const transformers: TypeScript.CustomTransformers = {
-	after: [(context) => new CommonJsTransformer(context)],
+	before: [(context) => new CommonJsTransformer(context)],
 }
 
 async function transformWithPlugin(code: string): Promise<string> {
