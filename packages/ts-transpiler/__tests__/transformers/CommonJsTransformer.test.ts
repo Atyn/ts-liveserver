@@ -49,6 +49,17 @@ describe('CommonJsTransformer', () => {
 				await transformWithoutPlugin(output),
 			)
 		})
+		it('Should move exports to top scope', async () => {
+			const input = '{ exports = Hello }'
+			const output = `
+				var GENERATED_VAR_BY_TRANSFORMER_1;
+				{ GENERATED_VAR_BY_TRANSFORMER_1 = Hello} 
+				export default GENERATED_VAR_BY_TRANSFORMER_1;
+			`
+			expect(await transformWithPlugin(input)).toBe(
+				await transformWithoutPlugin(output),
+			)
+		})
 		it('Should convert exports.name with same name as the parameter', async () => {
 			const input = 'const hello = null; exports.hello = hello'
 			const output = 'const hello = null; export { hello }'

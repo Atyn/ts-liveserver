@@ -11,7 +11,7 @@ export default class CommonJsTransformer
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context
 	}
-	transformBundle(): TypeScript.Bundle {
+	public transformBundle(): TypeScript.Bundle {
 		throw new Error('Method not implemented.')
 	}
 	public transformSourceFile(
@@ -20,7 +20,8 @@ export default class CommonJsTransformer
 		const requireInTopScope = this.requireTopScope(sourceFile)
 		const withoutModule = this.stripModule(requireInTopScope)
 		const withoutDefineProperty = this.convertDefinePropery(withoutModule)
-		const esmExport = this.convertToEsmExport(withoutDefineProperty)
+		const exportsTopScope = this.exportsTopScope(withoutDefineProperty)
+		const esmExport = this.convertToEsmExport(exportsTopScope)
 		return this.convertToEsmImport(esmExport)
 	}
 	// Generate a file unique variable name
@@ -357,6 +358,59 @@ export default class CommonJsTransformer
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		return TypeScript.visitNode(sourceFile, visit)
+	}
+	// Move all require-calls to top-scope
+	private exportsTopScope(
+		sourceFile: TypeScript.SourceFile,
+	): TypeScript.SourceFile {
+		const newTopStatements: TypeScript.VariableStatement[] = []
+		const newBottomStatements: TypeScript.Statement[] = []
+		const visit = (node: TypeScript.Node): TypeScript.Node => {
+			const inRootScope =
+				node?.parent?.parent && TypeScript.isSourceFile(node.parent.parent)
+			if (
+				inRootScope === false &&
+				TypeScript.isBinaryExpression(node) &&
+				TypeScript.isIdentifier(node.left) &&
+				node.operatorToken.kind === TypeScript.SyntaxKind.EqualsToken
+			) {
+				const newIdentifierName = this.generateUniqueName()
+				const newIdentifier = TypeScript.factory.createIdentifier(
+					newIdentifierName,
+				)
+				newTopStatements.push(
+					TypeScript.factory.createVariableStatement(undefined, [
+						TypeScript.factory.createVariableDeclaration(
+							newIdentifierName,
+							undefined,
+							undefined,
+							undefined,
+						),
+					]),
+				)
+				newBottomStatements.push(
+					TypeScript.factory.createExpressionStatement(
+						TypeScript.factory.createBinaryExpression(
+							node.left,
+							node.operatorToken,
+							newIdentifier,
+						),
+					),
+				)
+				return TypeScript.factory.createBinaryExpression(
+					newIdentifier,
+					node.operatorToken,
+					node.right,
+				)
+			}
+			return TypeScript.visitEachChild(node, visit, this.context)
+		}
+		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)
+		return TypeScript.factory.updateSourceFile(changedSourceFile, [
+			...newTopStatements,
+			...changedSourceFile.statements,
+			...newBottomStatements,
+		])
 	}
 	// Move all require-calls to top-scope
 	private requireTopScope(
