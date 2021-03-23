@@ -21,6 +21,12 @@ GENERATED_VAR_BY_TRANSFORMER_1 = parts_js_1.PropertyPart;
 export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
 `;
 
+exports[`CommonJsTransformer Exports Should convert define.property with value 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = true;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as __esModule };"
+`;
+
 exports[`CommonJsTransformer Exports Should convert exports.default 1`] = `
 "var GENERATED_VAR_BY_TRANSFORMER_1;
 GENERATED_VAR_BY_TRANSFORMER_1 = Hello;

@@ -95,6 +95,28 @@ export default class CommonJsTransformer
 								)
 							}
 						}
+						const propertyValue = thirdArgument.properties
+							.filter((property) => TypeScript.isPropertyAssignment(property))
+							.find(
+								(property) =>
+									TypeScript.isPropertyAssignment(property) &&
+									TypeScript.isIdentifier(property.name) &&
+									property.name.text === 'value',
+							)
+						if (
+							propertyValue &&
+							TypeScript.isPropertyAssignment(propertyValue) &&
+							propertyValue.initializer
+						) {
+							return TypeScript.factory.createBinaryExpression(
+								TypeScript.factory.createPropertyAccessExpression(
+									TypeScript.factory.createIdentifier(KEYNAME_EXPORTS),
+									TypeScript.factory.createIdentifier(secondArgument.text),
+								),
+								TypeScript.SyntaxKind.EqualsToken,
+								propertyValue.initializer,
+							)
+						}
 					}
 				}
 			}

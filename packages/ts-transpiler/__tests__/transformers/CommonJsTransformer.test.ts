@@ -98,6 +98,11 @@ describe('CommonJsTransformer', () => {
 			const input = 'Object.defineProperty(exports, "a", b });'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
+		it('Should convert define.property with value', async () => {
+			const input =
+				'Object.defineProperty(exports, "__esModule", { value: true })'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
 		it('Should convert ObjectLiteralExpression', async () => {
 			const input = 'module.exports = { a: b, c: d }'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
