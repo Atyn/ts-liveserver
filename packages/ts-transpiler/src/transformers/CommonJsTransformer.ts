@@ -372,6 +372,7 @@ export default class CommonJsTransformer
 				inRootScope === false &&
 				TypeScript.isBinaryExpression(node) &&
 				TypeScript.isIdentifier(node.left) &&
+				node.left.text === KEYNAME_EXPORTS &&
 				node.operatorToken.kind === TypeScript.SyntaxKind.EqualsToken
 			) {
 				const newIdentifierName = this.generateUniqueName()
