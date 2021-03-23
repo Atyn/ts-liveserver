@@ -5,102 +5,113 @@ describe('CommonJsTransformer', () => {
 	describe('Import', () => {
 		it('Should convert simple import', async () => {
 			const input = 'require("./hello.ts")'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 			const output = 'import "./hello.ts";'
 			expect(await transformWithPlugin(input)).toBe(output)
 		})
 		it('Should convert default import to ES6', async () => {
-			const input = 'const Hello = require("./hello.ts")'
+			const input = 'var Hello = require("./hello.ts")'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 			const output = 'import * as Hello from "./hello.ts";'
 			expect(await transformWithPlugin(input)).toBe(output)
 		})
 		it('Should convert named import', async () => {
 			const input = 'const { Hello } = require("./hello.ts")'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			/*
 			const output = 'import { Hello } from "./hello.ts";'
 			expect(await transformWithPlugin(input)).toBe(output)
+			*/
 		})
 		it('Should convert require in sub-scope', async () => {
 			const input = '{ const hello = require("hello.js") }'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			/* 
+			'import * as GENERATED_VAR_BY_TRANSFORMER_1 from "hello.js"; { const hello = GENERATED_VAR_BY_TRANSFORMER_1; }'
 			const output =
-				'import * as GENERATED_VAR_BY_TRANSFORMER_1 from "hello.js"; { const hello = GENERATED_VAR_BY_TRANSFORMER_1; }'
 			expect(await transformWithPlugin(input)).toBe(
 				await transformWithoutPlugin(output),
-			)
+			) */
 		})
 	})
 	describe('Forwards', () => {
 		it('Should convert redirects', async () => {
 			const input = 'module.exports = require("./hello.js")'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			/* 
 			const output = 'export * from "./hello.js";'
-			expect(await transformWithPlugin(input)).toBe(output)
+			expect(await transformWithPlugin(input)).toBe(output) 
+			*/
 		})
 	})
 	describe('Exports', () => {
+		it('Should convert named export', async () => {
+			const input = 'module.exports.hello = Hello;'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			const output = `
+				var GENERATED_VAR_BY_TRANSFORMER_1;
+				GENERATED_VAR_BY_TRANSFORMER_1 = Hello;
+				export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };
+			`
+			expect(await transformWithPlugin(input)).toBe(
+				await transformWithoutPlugin(output),
+			)
+		})
 		it('Should convert to default export to ES6', async () => {
 			const input = 'module.exports = Hello'
-			const output = 'export default Hello'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			const output = `var GENERATED_VAR_BY_TRANSFORMER_1; GENERATED_VAR_BY_TRANSFORMER_1 = Hello; export default GENERATED_VAR_BY_TRANSFORMER_1;`
 			expect(await transformWithPlugin(input)).toBe(
 				await transformWithoutPlugin(output),
 			)
 		})
 		it('Should convert exports.name', async () => {
 			const input = 'exports.hello = Hello'
-			const output = 'export { Hello as hello }'
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 		it('Should move exports to top scope', async () => {
-			const input = '{ exports = Hello }'
-			const output = `
-				var GENERATED_VAR_BY_TRANSFORMER_1;
-				{ GENERATED_VAR_BY_TRANSFORMER_1 = Hello} 
-				export default GENERATED_VAR_BY_TRANSFORMER_1;
+			const input = `
+					if (typeof define === 'function' && define.amd) {
+						define(function () {
+							return LZString;
+						})
+					} else if (typeof module !== 'undefined' && module != null) {
+						module.exports = LZString;
+					}
 			`
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 		it('Should convert exports.name with same name as the parameter', async () => {
 			const input = 'const hello = null; exports.hello = hello'
-			const output = 'const hello = null; export { hello }'
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 		it('Should convert exports.default', async () => {
 			const input = 'exports.default = Hello'
-			const output = 'export default Hello'
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 		it('Should convert define.property with getter', async () => {
 			const input =
 				'Object.defineProperty(exports, "hello", { enumerable: true, get: function () { return parts_js_1.PropertyPart; } });'
-			const output =
-				'var GENERATED_VAR_BY_TRANSFORMER_1 = parts_js_1.PropertyPart; export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };'
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 		it('Should convert define.property for identifier', async () => {
 			const input = 'Object.defineProperty(exports, "a", b });'
-			const output = 'export { b as a };'
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
-		it('Should convert define.property', async () => {
+		it('Should convert ObjectLiteralExpression', async () => {
 			const input = 'module.exports = { a: b, c: d }'
-			const output = 'export { b as a, d as c };'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			const output = `
+			var GENERATED_VAR_BY_TRANSFORMER_1;
+			var GENERATED_VAR_BY_TRANSFORMER_2;
+			GENERATED_VAR_BY_TRANSFORMER_1 = b;
+			GENERATED_VAR_BY_TRANSFORMER_2 = d;
+			export { GENERATED_VAR_BY_TRANSFORMER_1 as a };
+			export { GENERATED_VAR_BY_TRANSFORMER_2 as c };
+			`
 			expect(await transformWithPlugin(input)).toBe(
 				await transformWithoutPlugin(output),
 			)
-		})
-		it('Should convert to default export', async () => {
-			const input = 'module.exports.hello = Hello;'
-			const output = 'export { Hello as hello };'
-			expect(await transformWithPlugin(input)).toBe(output)
 		})
 	})
 })

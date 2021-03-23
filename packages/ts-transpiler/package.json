@@ -6,6 +6,7 @@
 		"build": "tsc",
 		"watch": "tsc --watch",
 		"test:watch": "jest --watch",
+		"test:update-snapshot": "jest --updateSnapshot",
 		"test": "jest"
 	},
 	"devDependencies": {

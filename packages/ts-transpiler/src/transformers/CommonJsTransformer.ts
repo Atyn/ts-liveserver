@@ -17,14 +17,17 @@ export default class CommonJsTransformer
 	public transformSourceFile(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
-		const requireInTopScope = this.requireTopScope(sourceFile)
-		const withoutModule = this.stripModule(requireInTopScope)
+		const withoutModule = this.stripModule(sourceFile)
 		const withoutDefineProperty = this.convertDefinePropery(withoutModule)
-		const exportsTopScope = this.exportsTopScope(withoutDefineProperty)
-		const esmExport = this.convertToEsmExport(exportsTopScope)
+		const withoutWildcardExports = this.stripWildcardExports(
+			withoutDefineProperty,
+		)
+		const requireInTopScope = this.requireTopScope(withoutWildcardExports)
+		// const exportsTopScope = this.exportsTopScope(requireInTopScope)
+		const esmExport = this.convertToEsmExport(requireInTopScope)
 		return this.convertToEsmImport(esmExport)
 	}
-	// Generate a file unique variable name
+	// Generate a file-unique variable name
 	private generateUniqueName() {
 		this.counter++
 		return 'GENERATED_VAR_BY_TRANSFORMER_' + String(this.counter)
@@ -99,7 +102,7 @@ export default class CommonJsTransformer
 		}
 		return TypeScript.visitNode(sourceFile, visit)
 	}
-	// Top level CommonJS to ESM
+	// Top level CommonJS to ESM. const hello = require('hello')
 	private convertToEsmImport(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
@@ -208,10 +211,15 @@ export default class CommonJsTransformer
 		}
 		return TypeScript.visitEachChild(sourceFile, visit, this.context)
 	}
-	// Top level CommonJS to ESM
+	// exports.hello = something -> export { something as hello }
 	private convertToEsmExport(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
+		const newTopStatements: TypeScript.VariableStatement[] = []
+		const newBottomStatements: (
+			| TypeScript.ExportDeclaration
+			| TypeScript.ExportAssignment
+		)[] = []
 		const visit = (
 			node: TypeScript.Node,
 		): TypeScript.Node | TypeScript.Node[] => {
@@ -227,119 +235,62 @@ export default class CommonJsTransformer
 					TypeScript.isIdentifier(node.expression.left.expression) &&
 					node.expression.left.expression.text === KEYNAME_EXPORTS
 				) {
+					const newIdentifierName = this.generateUniqueName()
+					const identifier = TypeScript.factory.createIdentifier(
+						newIdentifierName,
+					)
+					newTopStatements.push(
+						TypeScript.factory.createVariableStatement(undefined, [
+							TypeScript.factory.createVariableDeclaration(
+								newIdentifierName,
+								undefined,
+								undefined,
+								undefined,
+							),
+						]),
+					)
 					// exports.default = something;
 					if (node.expression.left.name.text === 'default') {
-						return TypeScript.factory.createExportAssignment(
-							undefined,
-							undefined,
-							undefined,
-							node.expression.right,
-						)
-					}
-					// exports.something = anIdentifier;
-					else if (TypeScript.isIdentifier(node.expression.right)) {
-						return TypeScript.factory.createExportDeclaration(
-							undefined,
-							undefined,
-							false,
-							TypeScript.factory.createNamedExports([
-								TypeScript.factory.createExportSpecifier(
-									node.expression.right.text === node.expression.left.name.text
-										? undefined
-										: node.expression.right,
-									node.expression.left.name,
-								),
-							]),
+						newBottomStatements.push(
+							TypeScript.factory.createExportAssignment(
+								undefined,
+								undefined,
+								undefined,
+								identifier,
+							),
 						)
 					} else {
-						const newIdentifierName = this.generateUniqueName()
-						const variableStatement = TypeScript.factory.createVariableStatement(
-							undefined,
-							[
-								TypeScript.factory.createVariableDeclaration(
-									newIdentifierName,
-									undefined,
-									undefined,
-									node.expression.right,
-								),
-							],
-						)
-						return [
-							variableStatement,
+						newBottomStatements.push(
 							TypeScript.factory.createExportDeclaration(
 								undefined,
 								undefined,
 								false,
 								TypeScript.factory.createNamedExports([
 									TypeScript.factory.createExportSpecifier(
-										TypeScript.factory.createIdentifier(newIdentifierName),
+										newIdentifierName,
 										node.expression.left.name,
 									),
 								]),
 							),
-						]
-					}
-				}
-				// exports = something;
-				if (
-					TypeScript.isIdentifier(node.expression.left) &&
-					node.expression.left.text === KEYNAME_EXPORTS
-				) {
-					// exports = { a: false, b: true }
-					if (TypeScript.isObjectLiteralExpression(node.expression.right)) {
-						const exportSpecifiers: TypeScript.ExportSpecifier[] = []
-						for (const property of node.expression.right.properties) {
-							if (
-								TypeScript.isPropertyAssignment(property) &&
-								TypeScript.isIdentifier(property.name) &&
-								TypeScript.isIdentifier(property.initializer)
-							) {
-								exportSpecifiers.push(
-									TypeScript.factory.createExportSpecifier(
-										property.initializer.text === property.name.text
-											? undefined
-											: property.initializer,
-										property.name,
-									),
-								)
-							}
-						}
-						return TypeScript.factory.createExportDeclaration(
-							undefined,
-							undefined,
-							false,
-							TypeScript.factory.createNamedExports(exportSpecifiers),
 						)
 					}
-					// exports = require('hello.js');
-					else if (
-						TypeScript.isCallExpression(node.expression.right) &&
-						TypeScript.isIdentifier(node.expression.right.expression) &&
-						node.expression.right.expression.text === 'require' &&
-						TypeScript.isStringLiteral(node.expression.right.arguments[0])
-					) {
-						return TypeScript.factory.createExportDeclaration(
-							undefined,
-							undefined,
-							false,
-							undefined,
-							node.expression.right.arguments[0],
-						)
-					}
-					// exports = 'hello' or exports = Hello
-					else {
-						return TypeScript.factory.createExportAssignment(
-							undefined,
-							undefined,
-							undefined,
+					return TypeScript.factory.createExpressionStatement(
+						TypeScript.factory.createBinaryExpression(
+							identifier,
+							node.expression.operatorToken,
 							node.expression.right,
-						)
-					}
+						),
+					)
 				}
 			}
-			return node
+			return TypeScript.visitEachChild(node, visit, this.context)
 		}
-		return TypeScript.visitEachChild(sourceFile, visit, this.context)
+		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)
+		return TypeScript.factory.updateSourceFile(changedSourceFile, [
+			...newTopStatements,
+			...changedSourceFile.statements,
+			...newBottomStatements,
+		])
 	}
 	// module.exports -> exports
 	private stripModule(
@@ -353,65 +304,70 @@ export default class CommonJsTransformer
 				node.expression.text === 'module' &&
 				node.name.text === KEYNAME_EXPORTS
 			) {
-				return node.name
+				return TypeScript.factory.createIdentifier(node.name.text)
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		return TypeScript.visitNode(sourceFile, visit)
 	}
-	// Move all require-calls to top-scope
-	private exportsTopScope(
+	// exports = hello -> export.default = hello
+	// exports = { a: 'a' } -> exports.a = 'a';
+	private stripWildcardExports(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
-		const newTopStatements: TypeScript.VariableStatement[] = []
-		const newBottomStatements: TypeScript.Statement[] = []
-		const visit = (node: TypeScript.Node): TypeScript.Node => {
-			const inRootScope =
-				node?.parent?.parent && TypeScript.isSourceFile(node.parent.parent)
+		const visit = (
+			node: TypeScript.Node,
+		): TypeScript.Node | TypeScript.Node[] => {
+			// exports = SOMETHING
 			if (
-				inRootScope === false &&
-				TypeScript.isBinaryExpression(node) &&
-				TypeScript.isIdentifier(node.left) &&
-				node.left.text === KEYNAME_EXPORTS &&
-				node.operatorToken.kind === TypeScript.SyntaxKind.EqualsToken
+				TypeScript.isExpressionStatement(node) &&
+				TypeScript.isBinaryExpression(node.expression) &&
+				node.expression.operatorToken.kind ===
+					TypeScript.SyntaxKind.EqualsToken &&
+				TypeScript.isIdentifier(node.expression.left) &&
+				node.expression.left.text === KEYNAME_EXPORTS
 			) {
-				const newIdentifierName = this.generateUniqueName()
-				const newIdentifier = TypeScript.factory.createIdentifier(
-					newIdentifierName,
-				)
-				newTopStatements.push(
-					TypeScript.factory.createVariableStatement(undefined, [
-						TypeScript.factory.createVariableDeclaration(
-							newIdentifierName,
-							undefined,
-							undefined,
-							undefined,
-						),
-					]),
-				)
-				newBottomStatements.push(
-					TypeScript.factory.createExpressionStatement(
+				// exports = { a: 'a' }
+				if (TypeScript.isObjectLiteralExpression(node.expression.right)) {
+					const expressions: TypeScript.ExpressionStatement[] = []
+					for (const property of node.expression.right.properties) {
+						if (
+							TypeScript.isPropertyAssignment(property) &&
+							TypeScript.isIdentifier(property.name)
+						) {
+							expressions.push(
+								TypeScript.factory.createExpressionStatement(
+									TypeScript.factory.createBinaryExpression(
+										TypeScript.factory.createPropertyAccessExpression(
+											TypeScript.factory.createIdentifier(KEYNAME_EXPORTS),
+											TypeScript.factory.createIdentifier(property.name.text),
+										),
+										node.expression.operatorToken,
+										property.initializer,
+									),
+								),
+							)
+						}
+					}
+					return expressions
+				}
+				// exports = Something
+				else {
+					return TypeScript.factory.createExpressionStatement(
 						TypeScript.factory.createBinaryExpression(
-							node.left,
-							node.operatorToken,
-							newIdentifier,
+							TypeScript.factory.createPropertyAccessExpression(
+								TypeScript.factory.createIdentifier(KEYNAME_EXPORTS),
+								TypeScript.factory.createIdentifier('default'),
+							),
+							node.expression.operatorToken,
+							node.expression.right,
 						),
-					),
-				)
-				return TypeScript.factory.createBinaryExpression(
-					newIdentifier,
-					node.operatorToken,
-					node.right,
-				)
+					)
+				}
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
-		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)
-		return TypeScript.factory.updateSourceFile(changedSourceFile, [
-			...newTopStatements,
-			...changedSourceFile.statements,
-			...newBottomStatements,
-		])
+		return TypeScript.visitNode(sourceFile, visit)
 	}
 	// Move all require-calls to top-scope
 	private requireTopScope(

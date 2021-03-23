@@ -1,0 +1,85 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CommonJsTransformer Exports Should convert ObjectLiteralExpression 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+var GENERATED_VAR_BY_TRANSFORMER_2;
+GENERATED_VAR_BY_TRANSFORMER_1 = b;
+GENERATED_VAR_BY_TRANSFORMER_2 = d;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as a };
+export { GENERATED_VAR_BY_TRANSFORMER_2 as c };"
+`;
+
+exports[`CommonJsTransformer Exports Should convert define.property for identifier 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = b;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as a };"
+`;
+
+exports[`CommonJsTransformer Exports Should convert define.property with getter 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = parts_js_1.PropertyPart;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+`;
+
+exports[`CommonJsTransformer Exports Should convert exports.default 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = Hello;
+export default GENERATED_VAR_BY_TRANSFORMER_1;"
+`;
+
+exports[`CommonJsTransformer Exports Should convert exports.name 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = Hello;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+`;
+
+exports[`CommonJsTransformer Exports Should convert exports.name with same name as the parameter 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+const hello = null;
+GENERATED_VAR_BY_TRANSFORMER_1 = hello;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+`;
+
+exports[`CommonJsTransformer Exports Should convert named export 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = Hello;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+`;
+
+exports[`CommonJsTransformer Exports Should convert to default export to ES6 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = Hello;
+export default GENERATED_VAR_BY_TRANSFORMER_1;"
+`;
+
+exports[`CommonJsTransformer Exports Should move exports to top scope 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+if (typeof define === 'function' && define.amd) {
+    define(function () {
+        return LZString;
+    });
+}
+else if (typeof module !== 'undefined' && module != null) {
+    GENERATED_VAR_BY_TRANSFORMER_1 = LZString;
+}
+export default GENERATED_VAR_BY_TRANSFORMER_1;"
+`;
+
+exports[`CommonJsTransformer Forwards Should convert redirects 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = require(\\"./hello.js\\");
+export default GENERATED_VAR_BY_TRANSFORMER_1;"
+`;
+
+exports[`CommonJsTransformer Import Should convert default import to ES6 1`] = `"import * as Hello from \\"./hello.ts\\";"`;
+
+exports[`CommonJsTransformer Import Should convert named import 1`] = `"import { Hello } from \\"./hello.ts\\";"`;
+
+exports[`CommonJsTransformer Import Should convert require in sub-scope 1`] = `
+"import * as GENERATED_VAR_BY_TRANSFORMER_1 from \\"hello.js\\";
+{
+    const hello = GENERATED_VAR_BY_TRANSFORMER_1;
+}"
+`;
+
+exports[`CommonJsTransformer Import Should convert simple import 1`] = `"import \\"./hello.ts\\";"`;

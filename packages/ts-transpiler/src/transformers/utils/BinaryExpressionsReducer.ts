@@ -87,6 +87,7 @@ export default class BinaryExpressionsReducer {
 		) {
 			return TypeScript.factory.createFalse()
 		}
+		// Empty functions
 		if (
 			TypeScript.isExpressionStatement(node) &&
 			TypeScript.isCallExpression(node.expression) &&
