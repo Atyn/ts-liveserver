@@ -1,25 +1,6 @@
 const warn = 'warn'
 const off = 'off'
-const tab = 'tab'
 const always = 'always'
-
-const indent = [
-	warn,
-	tab,
-	{
-		FunctionExpression: {
-			parameters: 1,
-		},
-		FunctionDeclaration: {
-			parameters: 1,
-		},
-		CallExpression: {
-			arguments: 1,
-		},
-		MemberExpression: 1,
-		SwitchCase: 1,
-	},
-]
 
 module.exports = {
 	parser: '@typescript-eslint/parser',

@@ -1,66 +1,72 @@
 import TypeScript from 'typescript'
-import Path from 'path'
-/*
-class ModuleResolutionHost implements TypeScript.ModuleResolutionHost {
-	fileExists(fileName: string): boolean
-	readFile(fileName: string): string | undefined
-	trace?(s: string): void
-	directoryExists?(directoryName: string): boolean
-	realpath?(path: string): string
-	getCurrentDirectory?(): string
-	getDirectories?(path: string): string[]
-}
-*/
+import DependencyResolver from './utils/DependencyResolver'
 
 export default class ResolveTransformer
 	implements TypeScript.CustomTransformer {
 	private context: TypeScript.TransformationContext
-	private moduleResolutionHost: TypeScript.ModuleResolutionHost
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context
-		this.moduleResolutionHost = TypeScript.createCompilerHost(
-			this.context.getCompilerOptions(),
-		)
 	}
-	// Return e.g. ./hello/module.js
-	private resolveDependencyName(
-		parentPath: string,
-		dendencyName: string,
-	): string {
-		const absolutePath = this.resolveDependencyPath(parentPath, dendencyName)
-		const pathObj = Path.parse(absolutePath)
-		const relativeDir =
-			Path.relative(Path.dirname(parentPath), pathObj.dir) || '.'
-		return relativeDir + '/' + pathObj.name + pathObj.ext
+	public transformSourceFile(
+		sourceFile: TypeScript.SourceFile,
+	): TypeScript.SourceFile {
+		const dynamicImportsResolved = this.resolveDynamicImport(sourceFile)
+		return this.resolveStaticImport(dynamicImportsResolved)
 	}
-	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
-	private resolveDependencyPath(
-		parentPath: string,
-		dendencyName: string,
-	): string {
-		const resolveResults = TypeScript.resolveModuleName(
-			dendencyName,
-			parentPath,
-			this.context.getCompilerOptions(),
-			this.moduleResolutionHost,
-		)
-		if (resolveResults?.resolvedModule?.isExternalLibraryImport) {
-			const nodeResolve = require.resolve(dendencyName, {
-				paths: [Path.dirname(parentPath)],
-			})
-			if (nodeResolve) {
-				// disable-eslint no-console
-				console.error(nodeResolve)
-				return nodeResolve
+	public transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
+		return node
+	}
+	private resolveStaticImport(
+		sourceFile: TypeScript.SourceFile,
+	): TypeScript.SourceFile {
+		const visit = (node: TypeScript.Node): TypeScript.Node => {
+			if (
+				(TypeScript.isImportDeclaration(node) ||
+					TypeScript.isExportDeclaration(node)) &&
+				node.moduleSpecifier
+			) {
+				return TypeScript.visitEachChild(node, visit, this.context)
 			}
+			if (
+				TypeScript.isStringLiteral(node) &&
+				node.parent &&
+				(TypeScript.isExportDeclaration(node.parent) ||
+					TypeScript.isImportDeclaration(node.parent)) &&
+				node.parent.moduleSpecifier
+			) {
+				return TypeScript.factory.createStringLiteral(
+					new DependencyResolver(
+						node.getSourceFile().fileName,
+						this.context,
+					).resolveRelativeDependency(node.text),
+					//	this.resolveDependencyName(node.getSourceFile().fileName, node.text),
+				)
+			}
+			return node
 		}
-		const resolvedFileName = resolveResults?.resolvedModule?.resolvedFileName
-		if (!resolvedFileName) {
-			throw new Error(
-				'Could not resolve' + dendencyName + 'from module' + parentPath,
-			)
+		return TypeScript.visitEachChild(sourceFile, visit, this.context)
+	}
+	private resolveDynamicImport(
+		sourceFile: TypeScript.SourceFile,
+	): TypeScript.SourceFile {
+		const visit = (node: TypeScript.Node): TypeScript.Node => {
+			if (
+				node.parent &&
+				TypeScript.isCallExpression(node.parent) &&
+				node.parent.expression.kind === TypeScript.SyntaxKind.ImportKeyword &&
+				TypeScript.isStringLiteral(node) &&
+				node === node.parent.arguments[0]
+			) {
+				return TypeScript.factory.createStringLiteral(
+					new DependencyResolver(
+						node.getSourceFile().fileName,
+						this.context,
+					).resolveRelativeDependency(node.text),
+				)
+			}
+			return TypeScript.visitEachChild(node, visit, this.context)
 		}
-		return resolvedFileName
+		return TypeScript.visitEachChild(sourceFile, visit, this.context)
 	}
 	private visit(node: TypeScript.Node) {
 		if (
@@ -82,15 +88,13 @@ export default class ResolveTransformer
 			node.parent.moduleSpecifier
 		) {
 			return TypeScript.factory.createStringLiteral(
-				this.resolveDependencyName(node.getSourceFile().fileName, node.text),
+				new DependencyResolver(
+					node.getSourceFile().fileName,
+					this.context,
+				).resolveRelativeDependency(node.text),
+				//	this.resolveDependencyName(node.getSourceFile().fileName, node.text),
 			)
 		}
-		return node
-	}
-	transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {
-		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)
-	}
-	transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
 		return node
 	}
 }
