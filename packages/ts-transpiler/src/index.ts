@@ -1,2 +1,5 @@
-import TsTranspiler from './TsTranspiler'
-export { TsTranspiler }
+export { default as EnergyEIcon } from './TsTranspiler'
+export { default as CommonJsTransformer } from './transformers/CommonJsTransformer'
+export { default as NodeEnvTransformer } from './transformers/NodeEnvTransformer'
+export { default as ResolveTransformer } from './transformers/ResolveTransformer'
+export { default as CodeOptimizerTransformer } from './transformers/CodeOptimizerTransformer'
