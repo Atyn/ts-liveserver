@@ -1,5 +1,6 @@
-import TypeScript, { TypeChecker } from 'typescript'
+import TypeScript from 'typescript'
 
+const KEYNAME_EXPORTS = 'exports'
 /*
 Transpile CommonJS to ES6 module
 */
@@ -33,33 +34,64 @@ export default class CommonJsTransformer
 	): TypeScript.SourceFile {
 		const visit = (node: TypeScript.Node): TypeScript.Node => {
 			if (
-				TypeScript.isExpressionStatement(node) &&
-				TypeScript.isCallExpression(node.expression) &&
-				TypeScript.isPropertyAccessExpression(node.expression.expression) &&
-				TypeScript.isIdentifier(node.expression.expression.expression) &&
-				TypeScript.isIdentifier(node.expression.expression.name) &&
-				node.expression.expression.expression.getText() === 'Object' &&
-				node.expression.expression.name.getText() === 'defineProperty' &&
-				TypeScript.isIdentifier(node.expression.arguments[0]) &&
-				node.expression.arguments[0].getText() === 'exports'
+				TypeScript.isCallExpression(node) &&
+				TypeScript.isPropertyAccessExpression(node.expression) &&
+				TypeScript.isIdentifier(node.expression.expression) &&
+				TypeScript.isIdentifier(node.expression.name) &&
+				node.expression.expression.text === 'Object' &&
+				node.expression.name.text === 'defineProperty' &&
+				TypeScript.isIdentifier(node.arguments[0])
 			) {
-				const secondArgument = node.expression.arguments[1]
-				const thirdArgument = node.expression.arguments[2]
+				const firstArgument = node.arguments[0]
+				const secondArgument = node.arguments[1]
+				const thirdArgument = node.arguments[2]
 				if (
-					TypeScript.isStringLiteral(secondArgument) &&
-					TypeScript.isIdentifier(thirdArgument)
+					TypeScript.isIdentifier(firstArgument) &&
+					firstArgument.text === KEYNAME_EXPORTS &&
+					TypeScript.isStringLiteral(secondArgument)
 				) {
-					return TypeScript.factory.createExportDeclaration(
-						undefined,
-						undefined,
-						false,
-						TypeScript.factory.createNamedExports([
-							TypeScript.factory.createExportSpecifier(
-								thirdArgument,
-								secondArgument.text,
+					if (TypeScript.isIdentifier(thirdArgument)) {
+						return TypeScript.factory.createBinaryExpression(
+							TypeScript.factory.createPropertyAccessExpression(
+								TypeScript.factory.createIdentifier(KEYNAME_EXPORTS),
+								TypeScript.factory.createIdentifier(secondArgument.text),
 							),
-						]),
-					)
+							TypeScript.SyntaxKind.EqualsToken,
+							thirdArgument,
+						)
+					} else if (TypeScript.isObjectLiteralExpression(thirdArgument)) {
+						const propertyGetter = thirdArgument.properties
+							.filter((property) => TypeScript.isPropertyAssignment(property))
+							.find(
+								(property) =>
+									TypeScript.isPropertyAssignment(property) &&
+									TypeScript.isIdentifier(property.name) &&
+									property.name.text === 'get',
+							)
+						if (
+							propertyGetter &&
+							TypeScript.isPropertyAssignment(propertyGetter) &&
+							propertyGetter.initializer &&
+							TypeScript.isFunctionExpression(propertyGetter.initializer) &&
+							TypeScript.isBlock(propertyGetter.initializer.body)
+						) {
+							const firstStatement =
+								propertyGetter.initializer.body.statements[0]
+							if (
+								TypeScript.isReturnStatement(firstStatement) &&
+								firstStatement.expression
+							) {
+								return TypeScript.factory.createBinaryExpression(
+									TypeScript.factory.createPropertyAccessExpression(
+										TypeScript.factory.createIdentifier(KEYNAME_EXPORTS),
+										TypeScript.factory.createIdentifier(secondArgument.text),
+									),
+									TypeScript.SyntaxKind.EqualsToken,
+									firstStatement.expression,
+								)
+							}
+						}
+					}
 				}
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
@@ -78,7 +110,7 @@ export default class CommonJsTransformer
 				TypeScript.isExpressionStatement(node) &&
 				TypeScript.isCallExpression(node.expression) &&
 				TypeScript.isIdentifier(node.expression.expression) &&
-				node.expression.expression.getText() === 'require' &&
+				node.expression.expression.text === 'require' &&
 				node.expression.arguments.length === 1
 			) {
 				const argument = node.expression.arguments[0]
@@ -105,8 +137,7 @@ export default class CommonJsTransformer
 						TypeScript.isIdentifier(
 							variableDeclaration.initializer.expression,
 						) &&
-						variableDeclaration.initializer.expression.getText() ===
-							'require' &&
+						variableDeclaration.initializer.expression.text === 'require' &&
 						variableDeclaration.initializer.arguments.length === 1
 					) {
 						const argument = variableDeclaration.initializer.arguments[0]
@@ -193,10 +224,10 @@ export default class CommonJsTransformer
 					TypeScript.isPropertyAccessExpression(node.expression.left) &&
 					TypeScript.isIdentifier(node.expression.left.name) &&
 					TypeScript.isIdentifier(node.expression.left.expression) &&
-					node.expression.left.expression.getText() === 'exports'
+					node.expression.left.expression.text === KEYNAME_EXPORTS
 				) {
 					// exports.default = something;
-					if (node.expression.left.name.getText() === 'default') {
+					if (node.expression.left.name.text === 'default') {
 						return TypeScript.factory.createExportAssignment(
 							undefined,
 							undefined,
@@ -212,7 +243,9 @@ export default class CommonJsTransformer
 							false,
 							TypeScript.factory.createNamedExports([
 								TypeScript.factory.createExportSpecifier(
-									node.expression.right,
+									node.expression.right.text === node.expression.left.name.text
+										? undefined
+										: node.expression.right,
 									node.expression.left.name,
 								),
 							]),
@@ -249,7 +282,7 @@ export default class CommonJsTransformer
 				// exports = something;
 				if (
 					TypeScript.isIdentifier(node.expression.left) &&
-					node.expression.left.getText() === 'exports'
+					node.expression.left.text === KEYNAME_EXPORTS
 				) {
 					// exports = { a: false, b: true }
 					if (TypeScript.isObjectLiteralExpression(node.expression.right)) {
@@ -262,7 +295,9 @@ export default class CommonJsTransformer
 							) {
 								exportSpecifiers.push(
 									TypeScript.factory.createExportSpecifier(
-										property.initializer,
+										property.initializer.text === property.name.text
+											? undefined
+											: property.initializer,
 										property.name,
 									),
 								)
@@ -278,7 +313,8 @@ export default class CommonJsTransformer
 					// exports = require('hello.js');
 					else if (
 						TypeScript.isCallExpression(node.expression.right) &&
-						node.expression.right.expression.getText() === 'require' &&
+						TypeScript.isIdentifier(node.expression.right.expression) &&
+						node.expression.right.expression.text === 'require' &&
 						TypeScript.isStringLiteral(node.expression.right.arguments[0])
 					) {
 						return TypeScript.factory.createExportDeclaration(
@@ -313,8 +349,8 @@ export default class CommonJsTransformer
 				TypeScript.isPropertyAccessExpression(node) &&
 				TypeScript.isIdentifier(node.expression) &&
 				TypeScript.isIdentifier(node.name) &&
-				node.expression.getText() === 'module' &&
-				node.name.getText() === 'exports'
+				node.expression.text === 'module' &&
+				node.name.text === KEYNAME_EXPORTS
 			) {
 				return node.name
 			}
@@ -338,7 +374,7 @@ export default class CommonJsTransformer
 				TypeScript.isCallExpression(node) &&
 				TypeScript.isIdentifier(node.expression) &&
 				node.arguments.length === 1 &&
-				node.expression.getText() === 'require' &&
+				node.expression.text === 'require' &&
 				inRootScope === false
 			) {
 				const newIdentifierName = this.generateUniqueName()
