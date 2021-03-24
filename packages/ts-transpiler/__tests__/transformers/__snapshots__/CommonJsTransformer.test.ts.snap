@@ -77,6 +77,13 @@ GENERATED_VAR_BY_TRANSFORMER_1 = require(\\"./hello.js\\");
 export default GENERATED_VAR_BY_TRANSFORMER_1;"
 `;
 
+exports[`CommonJsTransformer Forwards Should convert redirects 2`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+import * as WrenchIcon from './icons/WrenchIcon.js';
+GENERATED_VAR_BY_TRANSFORMER_1 = WrenchIcon;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as WrenchIcon };"
+`;
+
 exports[`CommonJsTransformer Import Should convert default import to ES6 1`] = `"import * as Hello from \\"./hello.ts\\";"`;
 
 exports[`CommonJsTransformer Import Should convert named import 1`] = `"import { Hello } from \\"./hello.ts\\";"`;

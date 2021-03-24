@@ -360,7 +360,8 @@ export default class CommonJsTransformer
 					const expressions: TypeScript.ExpressionStatement[] = []
 					for (const property of node.expression.right.properties) {
 						if (
-							TypeScript.isPropertyAssignment(property) &&
+							(TypeScript.isPropertyAssignment(property) ||
+								TypeScript.isShorthandPropertyAssignment(property)) &&
 							TypeScript.isIdentifier(property.name)
 						) {
 							expressions.push(
@@ -371,7 +372,9 @@ export default class CommonJsTransformer
 											TypeScript.factory.createIdentifier(property.name.text),
 										),
 										node.expression.operatorToken,
-										property.initializer,
+										TypeScript.isShorthandPropertyAssignment(property)
+											? property.name
+											: property.initializer,
 									),
 								),
 							)
