@@ -23,6 +23,7 @@ export default class CommonJsTransformer
 		const requireInTopScope = this.requireTopScope(withoutWildcardExports)
 		// const exportsTopScope = this.exportsTopScope(requireInTopScope)
 		const esmExport = this.convertToEsmExport(requireInTopScope)
+		
 		return this.convertToEsmImport(esmExport)
 	}
 	public transformBundle(): TypeScript.Bundle {
@@ -310,7 +311,6 @@ export default class CommonJsTransformer
 				)
 				*/
 			}
-
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)
@@ -434,7 +434,7 @@ export default class CommonJsTransformer
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
-		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)
+		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)		
 		return TypeScript.factory.updateSourceFile(changedSourceFile, [
 			...newStatements,
 			...changedSourceFile.statements,

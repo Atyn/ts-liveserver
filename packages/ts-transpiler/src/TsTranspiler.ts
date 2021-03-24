@@ -15,7 +15,7 @@ export default class TsTranspiler {
 		})
 		if (results.diagnostics?.length) {
 			// eslint-disable-next-line no-console
-			console.log(results.diagnostics)
+			console.log('diagnostics:', results.diagnostics)
 		}
 		return results
 	}

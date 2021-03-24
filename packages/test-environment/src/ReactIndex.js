@@ -1,7 +1,9 @@
+import './ModuleD'
+
 let mod = {}
 
 async function main() {
-	mod = await import('./ModuleC.js')
+	mod = await import('./ModuleC')
 }
 
 main()

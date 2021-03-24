@@ -9,8 +9,6 @@ export default class DependencyResolver {
 		this.context = context
 	}
 	public resolveRelativeDependency(dependencyFileName: string): string {
-		console.log('resolve', this.fileName, '->', dependencyFileName);
-		console.log(this.resolveDependencyName(this.fileName, dependencyFileName));
 		return this.resolveDependencyName(this.fileName, dependencyFileName)
 	}
 
@@ -23,33 +21,17 @@ export default class DependencyResolver {
 		const pathObj = Path.parse(absolutePath)
 		const relativeDir =
 			Path.relative(Path.dirname(parentPath), pathObj.dir) || '.'
-		return relativeDir + '/' + pathObj.name + pathObj.ext
+		const result = relativeDir + '/' + pathObj.name + pathObj.ext
+		if (result.startsWith('.')) {
+			return result
+		}
+		return './' + result
 	}
 	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
 	private resolveDependencyPath(
 		parentPath: string,
 		dendencyName: string,
-	): string {
-		/*
-		return require.resolve(dendencyName, {
-			paths: [Path.dirname(parentPath)],
-		})
-		*/
-
-		const resolveResults = TypeScript.nodeModuleNameResolver(
-			dendencyName,
-			parentPath,
-			this.context.getCompilerOptions(),
-			TypeScript.createCompilerHost(this.context.getCompilerOptions()),
-		)
-		console.log(resolveResults);
-		if(resolveResults?.resolvedModule?.resolvedFileName) {
-			return resolveResults.resolvedModule.resolvedFileName
-		}
-
-		throw new Error('Could not find file')
-	/*
-		const resolveResults = TypeScript.resolveModuleName(
+	): string {		const resolveResults = TypeScript.resolveModuleName(
 			dendencyName,
 			parentPath,
 			this.context.getCompilerOptions(),
@@ -72,6 +54,5 @@ export default class DependencyResolver {
 			)
 		}
 		return resolvedFileName
-		*/
 	}
 }

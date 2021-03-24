@@ -1,9 +1,24 @@
 import CommonJsTransformer from './transformers/CommonJsTransformer'
+import ResolveTransformer from './transformers/ResolveTransformer'
+import CompilerOptions from './CompilerOptions'
 import TypeScript from 'typescript'
 import Fs from 'fs'
 
+const filePath = './packages/test-environment/src/Test.js'
+// const filePath = './packages/test-environment/src/ReactIndex.js'
+// const filePath = './node_modules/react-dom/index.js'
+
+// const filePath = './node_modules/react-dom/cjs/react-dom.development.js' // './lzString.js'
+
+const transformers: TypeScript.CustomTransformers = {
+	before: [
+		(context) => new CommonJsTransformer(context),
+		(context) => new ResolveTransformer(context),
+	],
+}
+
 async function main() {
-	const content = (await Fs.promises.readFile('./lzString.js')).toString()
+	const content = (await Fs.promises.readFile(filePath)).toString()
 	await Fs.promises.writeFile(
 		'./tmp/out.js',
 		await transformWithPlugin(content),
@@ -12,30 +27,10 @@ async function main() {
 
 main()
 
-const compilerOptions: TypeScript.CompilerOptions = {
-	allowJs: true,
-	jsx: TypeScript.JsxEmit.React,
-	checkJs: false,
-	noResolve: true,
-	esModuleInterop: true,
-	skipLibCheck: true,
-	pretty: true,
-	allowUnreachableCode: true,
-	target: TypeScript.ScriptTarget.ES2020,
-	declaration: false,
-	module: TypeScript.ModuleKind.ES2020,
-	moduleResolution: TypeScript.ModuleResolutionKind.NodeJs,
-	sourceMap: false,
-}
-
-const transformers: TypeScript.CustomTransformers = {
-	after: [(context) => new CommonJsTransformer(context)],
-}
-
 async function transformWithPlugin(code: string): Promise<string> {
 	const results = await TypeScript.transpileModule(code, {
-		compilerOptions: compilerOptions,
-		fileName: 'hello.ts',
+		compilerOptions: CompilerOptions,
+		fileName: filePath,
 		transformers: transformers,
 	})
 	return results.outputText.trim()
@@ -43,8 +38,8 @@ async function transformWithPlugin(code: string): Promise<string> {
 
 async function transformWithoutPlugin(code: string): Promise<string> {
 	const results = await TypeScript.transpileModule(code, {
-		compilerOptions: compilerOptions,
-		fileName: 'hello.ts',
+		compilerOptions: CompilerOptions,
+		fileName: filePath,
 	})
 	return results.outputText.trim()
 }
