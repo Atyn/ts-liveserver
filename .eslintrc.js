@@ -23,7 +23,7 @@ module.exports = {
 	extends: ['plugin:@typescript-eslint/recommended', 'prettier'],
 	rules: {
 		'no-console': warn,
-		'no-unused-vars': warn,
+		'no-unused-vars': off,
 		'@typescript-eslint/no-unused-vars': off,
 		indent: off,
 		'no-const-assign': warn,
