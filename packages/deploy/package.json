@@ -1,0 +1,22 @@
+{
+	"name": "@ts-liveserver/deploy",
+	"version": "0.0.0",
+	"main": "dist/index.js",
+	"bin": {
+		"deploy": "dist/cli.js"
+	},
+	"scripts": {
+		"build": "tsc",
+		"watch": "tsc --watch"
+	},
+	"devDependencies": {
+		"@types/express": "^4.17.9",
+		"@types/jest": "^26.0.0",
+		"jest": "^26.0.1",
+		"ts-jest": "^26.1.0"
+	},
+	"dependencies": {
+		"typescript": "^4.1.2",
+		"@ts-liveserver/ts-transpiler": "^0.0.0"
+	}
+}

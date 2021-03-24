@@ -8,6 +8,8 @@
 		"watch": "lerna run watch --parallel",
 		"clean": "git clean -Xdf",
 		"test": "lerna run test --stream",
+		"deploy": "npm run build && lerna run --stream test-environment:deploy",
+		"_deploy": "npm run build && node ./packages/deploy/dist/cli.js --directory='./tmp/deploy' 'packages/test-environment/src/App.ts'",
 		"start": "npm run build && npm run test-environment:serve",
 		"test-environment:serve": "NODE_ENV='development' lerna run test-environment:serve --stream",
 		"lint": "eslint --max-warnings 0 --ignore-path .gitignore . && prettier --check --ignore-path .gitignore .",

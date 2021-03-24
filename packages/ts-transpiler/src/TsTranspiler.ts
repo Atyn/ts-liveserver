@@ -8,12 +8,6 @@ import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
 const compilerOptions: TypeScript.CompilerOptions = {
 	allowJs: true,
 	jsx: TypeScript.JsxEmit.React,
-	/*
-	jsx: TypeScript.JsxEmit.React,
-	jsxImportSource: 'react',
-	jsxFragmentFactory: 'React.Fragment',
-	jsxFactory: 'React.createElement',
-	*/
 	checkJs: false,
 	noResolve: true,
 	esModuleInterop: true,
@@ -48,6 +42,7 @@ export default class TsTranspiler {
 			transformers: transformers,
 		})
 		if (results.diagnostics?.length) {
+			// eslint-disable-next-line no-console
 			console.log(results.diagnostics)
 		}
 		return results
