@@ -38,10 +38,28 @@ describe('CommonJsTransformer', () => {
 		it('Should convert redirects', async () => {
 			const input = 'module.exports = require("./hello.js")'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
-			/* 
+			/*
 			const output = 'export * from "./hello.js";'
 			expect(await transformWithPlugin(input)).toBe(output) 
 			*/
+		})
+		it('Should convert redirects', async () => {
+			const input = `
+				const WrenchIcon = require('./icons/WrenchIcon.js');
+				module.exports = {
+					WrenchIcon,
+				}
+			`
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			const output = `
+				var GENERATED_VAR_BY_TRANSFORMER_1;
+				import * as WrenchIcon from './icons/WrenchIcon.js';
+				GENERATED_VAR_BY_TRANSFORMER_1 = WrenchIcon;
+				export { GENERATED_VAR_BY_TRANSFORMER_1 as WrenchIcon };	
+			`
+			expect(await transformWithPlugin(input)).toBe(
+				await transformWithoutPlugin(output),
+			)
 		})
 	})
 	describe('Exports', () => {
