@@ -89,3 +89,20 @@ exports[`CommonJsTransformer Import Should convert require in sub-scope 1`] = `
 `;
 
 exports[`CommonJsTransformer Import Should convert simple import 1`] = `"import \\"./hello.ts\\";"`;
+
+exports[`CommonJsTransformer Should read from internal export Should convert to multiple commands 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+var GENERATED_VAR_BY_TRANSFORMER_2;
+var GENERATED_VAR_BY_TRANSFORMER_3;
+GENERATED_VAR_BY_TRANSFORMER_1 = GENERATED_VAR_BY_TRANSFORMER_2 = GENERATED_VAR_BY_TRANSFORMER_3 = void 0;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as lastAttributeNameRegex };
+export { GENERATED_VAR_BY_TRANSFORMER_2 as createMarker };
+export { GENERATED_VAR_BY_TRANSFORMER_3 as isTemplatePartActive };"
+`;
+
+exports[`CommonJsTransformer Should read from internal export Should red from internal export "hello" 1`] = `
+"var GENERATED_VAR_BY_TRANSFORMER_1;
+GENERATED_VAR_BY_TRANSFORMER_1 = \\"Hello\\";
+console.log(GENERATED_VAR_BY_TRANSFORMER_1);
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+`;

@@ -119,6 +119,38 @@ describe('CommonJsTransformer', () => {
 			)
 		})
 	})
+	describe('Should read from internal export', () => {
+		it('Should convert to multiple commands', async () => {
+			const input =
+				'exports.lastAttributeNameRegex = exports.createMarker = exports.isTemplatePartActive = void 0'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			const output = `
+			  var GENERATED_VAR_BY_TRANSFORMER_1;
+				var GENERATED_VAR_BY_TRANSFORMER_2;
+				var GENERATED_VAR_BY_TRANSFORMER_3;
+				GENERATED_VAR_BY_TRANSFORMER_1 = GENERATED_VAR_BY_TRANSFORMER_2 = GENERATED_VAR_BY_TRANSFORMER_3 = void 0;
+				export { GENERATED_VAR_BY_TRANSFORMER_1 as lastAttributeNameRegex };
+				export { GENERATED_VAR_BY_TRANSFORMER_2 as createMarker };
+				export { GENERATED_VAR_BY_TRANSFORMER_3 as isTemplatePartActive };
+			`
+			expect(await transformWithPlugin(input)).toBe(
+				await transformWithoutPlugin(output),
+			)
+		})
+		it('Should red from internal export "hello"', async () => {
+			const input = 'exports.hello = "Hello"; console.log(exports.hello)'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			const output = `
+				var GENERATED_VAR_BY_TRANSFORMER_1
+				GENERATED_VAR_BY_TRANSFORMER_1 = "Hello"
+				console.log(GENERATED_VAR_BY_TRANSFORMER_1)
+				export { GENERATED_VAR_BY_TRANSFORMER_1 as hello }
+			`
+			expect(await transformWithPlugin(input)).toBe(
+				await transformWithoutPlugin(output),
+			)
+		})
+	})
 })
 
 const compilerOptions: TypeScript.CompilerOptions = {

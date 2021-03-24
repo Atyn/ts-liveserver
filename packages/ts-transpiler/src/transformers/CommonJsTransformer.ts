@@ -7,12 +7,10 @@ Transpile CommonJS to ES6 module
 export default class CommonJsTransformer
 	implements TypeScript.CustomTransformer {
 	private context: TypeScript.TransformationContext
+	private exportsVariableMap: Record<string, string> = {}
 	private counter = 0
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context
-	}
-	public transformBundle(): TypeScript.Bundle {
-		throw new Error('Method not implemented.')
 	}
 	public transformSourceFile(
 		sourceFile: TypeScript.SourceFile,
@@ -26,6 +24,9 @@ export default class CommonJsTransformer
 		// const exportsTopScope = this.exportsTopScope(requireInTopScope)
 		const esmExport = this.convertToEsmExport(requireInTopScope)
 		return this.convertToEsmImport(esmExport)
+	}
+	public transformBundle(): TypeScript.Bundle {
+		throw new Error('Method not implemented.')
 	}
 	// Generate a file-unique variable name
 	private generateUniqueName() {
@@ -245,19 +246,20 @@ export default class CommonJsTransformer
 		const visit = (
 			node: TypeScript.Node,
 		): TypeScript.Node | TypeScript.Node[] => {
+			// exports.something = something;
 			if (
-				TypeScript.isExpressionStatement(node) &&
-				TypeScript.isBinaryExpression(node.expression) &&
-				node.expression.operatorToken.kind === TypeScript.SyntaxKind.EqualsToken
+				TypeScript.isPropertyAccessExpression(node) &&
+				TypeScript.isIdentifier(node.name) &&
+				TypeScript.isIdentifier(node.expression) &&
+				node.expression.text === KEYNAME_EXPORTS
 			) {
-				// exports.something = something;
-				if (
-					TypeScript.isPropertyAccessExpression(node.expression.left) &&
-					TypeScript.isIdentifier(node.expression.left.name) &&
-					TypeScript.isIdentifier(node.expression.left.expression) &&
-					node.expression.left.expression.text === KEYNAME_EXPORTS
-				) {
+				if (node.name.text in this.exportsVariableMap) {
+					return TypeScript.factory.createIdentifier(
+						this.exportsVariableMap[node.name.text],
+					)
+				} else {
 					const newIdentifierName = this.generateUniqueName()
+					this.exportsVariableMap[node.name.text] = newIdentifierName
 					const identifier = TypeScript.factory.createIdentifier(
 						newIdentifierName,
 					)
@@ -272,7 +274,7 @@ export default class CommonJsTransformer
 						]),
 					)
 					// exports.default = something;
-					if (node.expression.left.name.text === 'default') {
+					if (node.name.text === 'default') {
 						newBottomStatements.push(
 							TypeScript.factory.createExportAssignment(
 								undefined,
@@ -290,21 +292,25 @@ export default class CommonJsTransformer
 								TypeScript.factory.createNamedExports([
 									TypeScript.factory.createExportSpecifier(
 										newIdentifierName,
-										node.expression.left.name,
+										node.name,
 									),
 								]),
 							),
 						)
 					}
-					return TypeScript.factory.createExpressionStatement(
-						TypeScript.factory.createBinaryExpression(
-							identifier,
-							node.expression.operatorToken,
-							node.expression.right,
-						),
-					)
+					return identifier
 				}
+				/*
+				return TypeScript.factory.createExpressionStatement(
+					TypeScript.factory.createBinaryExpression(
+						identifier,
+						node.expression.operatorToken,
+						node.expression.right,
+					),
+				)
+				*/
 			}
+
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)
