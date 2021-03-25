@@ -1,0 +1,15 @@
+name: Publish
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: '1.2.3'
+        required: true
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v1
+      - run: npm ci
+      - run: npm run build
+      - run: npm run publish
