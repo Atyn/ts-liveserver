@@ -21,10 +21,9 @@ export default class CommonJsTransformer
 			withoutDefineProperty,
 		)
 		const requireInTopScope = this.requireTopScope(withoutWildcardExports)
-		// const exportsTopScope = this.exportsTopScope(requireInTopScope)
 		const esmExport = this.convertToEsmExport(requireInTopScope)
-
-		return this.convertToEsmImport(esmExport)
+		const withEsmImport = this.convertToEsmImport(esmExport)
+		return this.createSyntheticDefaultExport(withEsmImport)
 	}
 	public transformBundle(): TypeScript.Bundle {
 		throw new Error('Method not implemented.')
@@ -179,10 +178,8 @@ export default class CommonJsTransformer
 									undefined,
 									TypeScript.factory.createImportClause(
 										false,
+										variableDeclaration.name,
 										undefined,
-										TypeScript.factory.createNamespaceImport(
-											variableDeclaration.name,
-										),
 									),
 									argument,
 								),
@@ -265,14 +262,20 @@ export default class CommonJsTransformer
 						newIdentifierName,
 					)
 					newTopStatements.push(
-						TypeScript.factory.createVariableStatement(undefined, [
-							TypeScript.factory.createVariableDeclaration(
-								newIdentifierName,
-								undefined,
-								undefined,
-								undefined,
+						TypeScript.factory.createVariableStatement(
+							undefined,
+							TypeScript.factory.createVariableDeclarationList(
+								[
+									TypeScript.factory.createVariableDeclaration(
+										newIdentifierName,
+										undefined,
+										undefined,
+										undefined,
+									),
+								],
+								TypeScript.NodeFlags.Let,
 							),
-						]),
+						),
 					)
 					// exports.default = something;
 					if (node.name.text === 'default') {
@@ -421,14 +424,20 @@ export default class CommonJsTransformer
 			) {
 				const newIdentifierName = this.generateUniqueName()
 				newStatements.push(
-					TypeScript.factory.createVariableStatement(undefined, [
-						TypeScript.factory.createVariableDeclaration(
-							newIdentifierName,
-							undefined,
-							undefined,
-							node,
+					TypeScript.factory.createVariableStatement(
+						undefined,
+						TypeScript.factory.createVariableDeclarationList(
+							[
+								TypeScript.factory.createVariableDeclaration(
+									newIdentifierName,
+									undefined,
+									undefined,
+									node,
+								),
+							],
+							TypeScript.NodeFlags.Let,
 						),
-					]),
+					),
 				)
 				return TypeScript.factory.createIdentifier(newIdentifierName)
 			}
@@ -438,6 +447,72 @@ export default class CommonJsTransformer
 		return TypeScript.factory.updateSourceFile(changedSourceFile, [
 			...newStatements,
 			...changedSourceFile.statements,
+		])
+	}
+	// export { hello as Hello } -> export default { something: hello }
+	private createSyntheticDefaultExport(
+		sourceFile: TypeScript.SourceFile,
+	): TypeScript.SourceFile {
+		const exportSpecifiers: TypeScript.ExportSpecifier[] = []
+		const visit = (node: TypeScript.Node): TypeScript.Node | undefined => {
+			if (
+				TypeScript.isExportDeclaration(node) &&
+				node.exportClause &&
+				TypeScript.isNamedExports(node.exportClause)
+			) {
+				exportSpecifiers.push(...node.exportClause.elements)
+				return undefined
+			}
+			return node
+		}
+		const changedSourceFile = TypeScript.visitEachChild(
+			sourceFile,
+			visit,
+			this.context,
+		)
+		if (exportSpecifiers.length === 0) {
+			return sourceFile
+		}
+		const propertyAssignments: TypeScript.PropertyAssignment[] = []
+		for (const exportSpecifier of exportSpecifiers) {
+			if (
+				exportSpecifier.propertyName &&
+				TypeScript.isIdentifier(exportSpecifier.propertyName)
+			) {
+				propertyAssignments.push(
+					TypeScript.factory.createPropertyAssignment(
+						exportSpecifier.name,
+						exportSpecifier.propertyName,
+					),
+				)
+			}
+		}
+		const newStatements = [
+			...changedSourceFile.statements,
+			TypeScript.factory.createExportDeclaration(
+				undefined,
+				undefined,
+				false,
+				TypeScript.factory.createNamedExports(exportSpecifiers),
+			),
+		]
+		// If there is not export default already -> add synthentic
+		if (
+			sourceFile.statements.every(
+				(node) => !TypeScript.isExportAssignment(node),
+			)
+		) {
+			newStatements.push(
+				TypeScript.factory.createExportAssignment(
+					undefined,
+					undefined,
+					undefined,
+					TypeScript.factory.createObjectLiteralExpression(propertyAssignments),
+				),
+			)
+		}
+		return TypeScript.factory.updateSourceFile(changedSourceFile, [
+			...newStatements,
 		])
 	}
 }
