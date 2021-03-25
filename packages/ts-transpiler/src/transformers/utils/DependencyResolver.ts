@@ -31,7 +31,8 @@ export default class DependencyResolver {
 	private resolveDependencyPath(
 		parentPath: string,
 		dendencyName: string,
-	): string {		const resolveResults = TypeScript.resolveModuleName(
+	): string {
+		const resolveResults = TypeScript.resolveModuleName(
 			dendencyName,
 			parentPath,
 			this.context.getCompilerOptions(),
