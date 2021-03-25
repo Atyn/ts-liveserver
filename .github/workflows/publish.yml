@@ -17,5 +17,4 @@ jobs:
       - run: npm ci
       - run: npm run build
       - run: echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" > ./.npmrc
-      - run: npm run version -- --yes
       - run: npm run publish
