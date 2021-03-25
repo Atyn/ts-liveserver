@@ -11,7 +11,7 @@ const CompilerOptions: TypeScript.CompilerOptions = {
 	declaration: false,
 	module: TypeScript.ModuleKind.ES2020,
 	moduleResolution: TypeScript.ModuleResolutionKind.NodeJs,
-	sourceMap: true,
+	sourceMap: false,
 }
 
 export default CompilerOptions
