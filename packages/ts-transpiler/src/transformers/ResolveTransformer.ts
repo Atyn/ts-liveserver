@@ -21,25 +21,34 @@ export default class ResolveTransformer
 	): TypeScript.SourceFile {
 		const visit = (node: TypeScript.Node): TypeScript.Node => {
 			if (
-				(TypeScript.isImportDeclaration(node) ||
-					TypeScript.isExportDeclaration(node)) &&
-				node.moduleSpecifier
+				TypeScript.isImportDeclaration(node) &&
+				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
-				return TypeScript.visitEachChild(node, visit, this.context)
+				return TypeScript.factory.updateImportDeclaration(
+					node,
+					node.decorators,
+					node.modifiers,
+					node.importClause,
+					TypeScript.factory.createStringLiteral(
+						new DependencyResolver(
+							sourceFile.fileName,
+							this.context,
+						).resolveRelativeDependency(node.moduleSpecifier.text),
+					),
+				)
 			}
 			if (
-				TypeScript.isStringLiteral(node) &&
-				node.parent &&
-				(TypeScript.isExportDeclaration(node.parent) ||
-					TypeScript.isImportDeclaration(node.parent)) &&
-				node.parent.moduleSpecifier
+				TypeScript.isExportDeclaration(node) &&
+				node.moduleSpecifier &&
+				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
-				return TypeScript.factory.createStringLiteral(
-					new DependencyResolver(
-						node.getSourceFile().fileName,
-						this.context,
-					).resolveRelativeDependency(node.text),
-					//	this.resolveDependencyName(node.getSourceFile().fileName, node.text),
+				return TypeScript.factory.updateExportDeclaration(
+					node,
+					undefined,
+					undefined,
+					node.isTypeOnly,
+					undefined,
+					node.moduleSpecifier,
 				)
 			}
 			return node
@@ -59,7 +68,7 @@ export default class ResolveTransformer
 			) {
 				return TypeScript.factory.createStringLiteral(
 					new DependencyResolver(
-						node.getSourceFile().fileName,
+						sourceFile.fileName,
 						this.context,
 					).resolveRelativeDependency(node.text),
 				)

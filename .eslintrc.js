@@ -43,7 +43,6 @@ module.exports = {
 		'vars-on-top': warn,
 		'global-require': warn,
 		'init-declarations': [warn, always],
-		'no-use-before-define': [warn, { functions: false }],
 		'arrow-spacing': warn,
 		'no-var': warn,
 		'prefer-rest-params': warn,

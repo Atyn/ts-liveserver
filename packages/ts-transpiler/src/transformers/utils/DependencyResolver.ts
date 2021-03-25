@@ -21,7 +21,11 @@ export default class DependencyResolver {
 		const pathObj = Path.parse(absolutePath)
 		const relativeDir =
 			Path.relative(Path.dirname(parentPath), pathObj.dir) || '.'
-		return relativeDir + '/' + pathObj.name + pathObj.ext
+		const result = relativeDir + '/' + pathObj.name + pathObj.ext
+		if (result.startsWith('.')) {
+			return result
+		}
+		return './' + result
 	}
 	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
 	private resolveDependencyPath(

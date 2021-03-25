@@ -37,9 +37,12 @@ function getOutputDirectory(): string {
 	throw new Error('--directory= was not provided')
 }
 function getInputFiles(): string[] {
-	const list = Array.from(process.argv).filter(
-		(str) => str.endsWith('.js') || str.endsWith('.ts') || str.endsWith('.mjs'),
-	)
+	const list = Array.from(process.argv)
+		.filter((_, index) => index > 1)
+		.filter(
+			(str) =>
+				str.endsWith('.js') || str.endsWith('.ts') || str.endsWith('.mjs'),
+		)
 	if (list.length === 0) {
 		throw new Error('No files was provided')
 	}

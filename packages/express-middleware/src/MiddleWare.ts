@@ -5,6 +5,7 @@ import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
 
 export default class MiddleWare {
 	private path: string
+	private startTime = new Date().getTime()
 	private tsTranspiler = new TsTranspiler()
 	constructor(path = '.') {
 		this.path = path
@@ -24,7 +25,7 @@ export default class MiddleWare {
 					const info = await Fs.promises.stat(fileName)
 					response.set({
 						'Content-Type': 'application/javascript',
-						ETag: info.mtimeMs,
+						ETag: this.startTime + '-' + info.mtimeMs,
 					})
 					response.send(
 						(await this.tsTranspiler.transformFile(fileName)).outputText,
