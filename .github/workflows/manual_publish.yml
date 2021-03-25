@@ -1,4 +1,4 @@
-name: Publish
+name: Manual publish
 on:
   workflow_dispatch:
     inputs:
@@ -10,6 +10,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v1
+        with:
+          fetch-depth: 0
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run build
-      - run: npm run publish
+      - name: 'publish'
+        run: |
+          cd packages/ts-transpiler
+          echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" > ./.npmrc
+          npm version v${{ github.event.inputs.version }}
+          npm publish
