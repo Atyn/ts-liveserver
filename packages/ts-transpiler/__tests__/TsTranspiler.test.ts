@@ -11,7 +11,7 @@ describe('TsTranspiler', () => {
 				Path.resolve(__dirname, 'inputData', inputFileName),
 			)
 		).outputText
-		expect(results + '\n').toBe(
+		expect(results).toBe(
 			Fs.readFileSync(
 				Path.resolve(__dirname, 'outputData', 'ModuleA.js'),
 			).toString(),
