@@ -32,8 +32,13 @@ export default class NodeEnvTransformer
 		}
 		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)
 	}
-	transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {
-		return TypeScript.visitNode(node, this.visit.bind(this))
+	transformSourceFile(
+		sourceFile: TypeScript.SourceFile,
+	): TypeScript.SourceFile {
+		if (!/NODE_ENV/gm.test(sourceFile.text)) {
+			return sourceFile
+		}
+		return TypeScript.visitNode(sourceFile, this.visit.bind(this))
 	}
 	transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
 		return node

@@ -16,32 +16,16 @@ export default class MiddleWare {
 		next: () => void,
 	): Promise<void> {
 		switch (Path.extname(request.path)) {
-			case '.js':
-			case '.jsx':
-			case '.tsx':
-			case '.ts': {
-				const fileName = Path.resolve(this.path + request.path)
-				if (await this.fileExists(fileName)) {
-					const info = await Fs.promises.stat(fileName)
-					response.set({
-						'Content-Type': 'application/javascript',
-						ETag: this.startTime + '-' + info.mtimeMs,
-					})
-					response.send(
-						(await this.tsTranspiler.transformFile(fileName)).outputText,
-					)
-				} else if (!(await this.fileExists(fileName))) {
-					const typeScriptFilenName = fileName.replace(
-						Path.extname(fileName),
-						'.js',
-					)
-					if (await this.fileExists(typeScriptFilenName)) {
-						response.redirect(
-							request.path.replace(Path.extname(request.path), '.ts'),
-						)
-					}
-					next()
-				}
+			case '.js': {
+				const result = await this.tsTranspiler.transformFile(
+					Path.resolve(this.path + request.path),
+				)
+				const info = await Fs.promises.stat(result.resolvedFilePath)
+				response.set({
+					'Content-Type': 'application/javascript',
+					ETag: this.startTime + '-' + info.mtimeMs,
+				})
+				response.send(result.outputText)
 				break
 			}
 			default:

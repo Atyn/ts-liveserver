@@ -35,7 +35,7 @@ export default class CommonJsTransformer
 		throw new Error('Method not implemented.')
 	}
 	private isCommonJsModule(sourceFile: TypeScript.SourceFile): boolean {
-		return /require|exports/.test(sourceFile.text)
+		return /require|exports/gm.test(sourceFile.text)
 	}
 	// Generate a file-unique variable name
 	private generateUniqueName() {

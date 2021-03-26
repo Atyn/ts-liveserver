@@ -6,6 +6,7 @@ const CompilerOptions: TypeScript.CompilerOptions = {
 	checkJs: false,
 	noResolve: false,
 	esModuleInterop: true,
+	inlineSourceMap: true,
 	skipLibCheck: true,
 	target: TypeScript.ScriptTarget.ES2020,
 	declaration: false,

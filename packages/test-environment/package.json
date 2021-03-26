@@ -4,7 +4,7 @@
 	"version": "0.0.0",
 	"scripts": {
 		"test-environment:serve": "ts-liveserver ../../",
-		"test-environment:deploy": "deploy --directory='./tmp/a/b/deploy' './src/App.ts'"
+		"test-environment:deploy": "deploy --directory='./tmp/a/b/deploy' './src/App.js'"
 	},
 	"devDependencies": {
 		"@ts-liveserver/server": "^0.0.0",
