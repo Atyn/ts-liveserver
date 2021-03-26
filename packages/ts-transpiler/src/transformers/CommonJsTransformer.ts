@@ -15,6 +15,9 @@ export default class CommonJsTransformer
 	public transformSourceFile(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
+		if (this.isCommonJsModule(sourceFile) === false) {
+			return sourceFile
+		}
 		const withoutModule = this.stripModule(sourceFile)
 		const withoutDefineProperty = this.convertDefinePropery(withoutModule)
 		const withoutWildcardExports = this.stripWildcardExports(
@@ -30,6 +33,9 @@ export default class CommonJsTransformer
 	}
 	public transformBundle(): TypeScript.Bundle {
 		throw new Error('Method not implemented.')
+	}
+	private isCommonJsModule(sourceFile: TypeScript.SourceFile): boolean {
+		return /require|exports/.test(sourceFile.text)
 	}
 	// Generate a file-unique variable name
 	private generateUniqueName() {
