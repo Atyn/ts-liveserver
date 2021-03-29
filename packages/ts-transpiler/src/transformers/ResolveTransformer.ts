@@ -101,7 +101,6 @@ export default class ResolveTransformer
 					node.getSourceFile().fileName,
 					this.context,
 				).resolveRelativeDependency(node.text),
-				//	this.resolveDependencyName(node.getSourceFile().fileName, node.text),
 			)
 		}
 		return node
