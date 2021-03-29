@@ -6,7 +6,7 @@ import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
 export default class MiddleWare {
 	private path: string
 	private startTime = new Date().getTime()
-	private tsTranspiler = new TsTranspiler()
+	private tsTranspiler = new TsTranspiler({ inlineSourceMap: true })
 	constructor(path = '.') {
 		this.path = path
 	}

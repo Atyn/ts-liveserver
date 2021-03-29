@@ -4,12 +4,16 @@ import TypeScript from 'typescript'
 import CompilerOptions from './CompilerOptions'
 import AllTransformers from './AllTransformers'
 export default class TsTranspiler {
+	private compilerOptions: TypeScript.CompilerOptions = CompilerOptions
+	constructor(compilerOptions?: TypeScript.CompilerOptions) {
+		Object.assign(this.compilerOptions, compilerOptions)
+	}
 	async transformCode(
 		code: string,
 		fileName: string,
 	): Promise<TypeScript.TranspileOutput> {
 		const results = TypeScript.transpileModule(code, {
-			compilerOptions: CompilerOptions,
+			compilerOptions: this.compilerOptions,
 			fileName: fileName,
 			reportDiagnostics: true,
 			transformers: AllTransformers,
