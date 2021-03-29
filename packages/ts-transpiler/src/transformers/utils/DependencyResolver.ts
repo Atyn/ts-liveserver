@@ -43,8 +43,6 @@ export default class DependencyResolver {
 				paths: [Path.dirname(parentPath)],
 			})
 			if (nodeResolve) {
-				// eslint-disable-next-line no-console
-				console.error(nodeResolve)
 				return nodeResolve
 			}
 		}

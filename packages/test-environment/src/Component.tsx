@@ -1,6 +1,4 @@
-import React from 'react'
-
-console.log(React)
+import * as React from 'react'
 
 export default class Component extends React.Component {
 	render() {

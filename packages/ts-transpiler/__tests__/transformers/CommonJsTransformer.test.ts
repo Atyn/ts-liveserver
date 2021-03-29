@@ -84,6 +84,16 @@ describe('CommonJsTransformer', () => {
 			const input = 'module.exports = { a: b, c: d }'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
+		it('Should export nested expression', async () => {
+			const input = `
+				(exports = function (key) {
+					return key;
+				})('versions', []).push({
+					version: '3.6.5',
+				});
+			`
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
 	})
 	describe('Should read from internal export', () => {
 		it('Should convert to multiple commands', async () => {
