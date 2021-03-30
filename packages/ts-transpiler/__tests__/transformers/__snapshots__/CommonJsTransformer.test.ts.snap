@@ -3,39 +3,38 @@
 exports[`CommonJsTransformer Exports Should convert ObjectLiteralExpression 1`] = `
 "let exports = {}, module = { exports: exports };
 exports = { a: b, c: d };
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.a, GENERATED_VAR_BY_TRANSFORMER_2 = exports.c;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as a, GENERATED_VAR_BY_TRANSFORMER_2 as c };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as a, GENERATED_VAR_BY_TRANSFORMER_2 as c };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Exports Should convert define.property for identifier 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.a = b;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.a;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as a };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as a };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Exports Should convert define.property with getter 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.hello = parts_js_1.PropertyPart;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.hello;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Exports Should convert define.property with value 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.__esModule = true;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.__esModule;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as __esModule };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as __esModule };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Exports Should convert exports.default 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.default = Hello;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.default;
 export { GENERATED_VAR_BY_TRANSFORMER_1 as default };"
 `;
@@ -43,26 +42,26 @@ export { GENERATED_VAR_BY_TRANSFORMER_1 as default };"
 exports[`CommonJsTransformer Exports Should convert exports.name 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.hello = Hello;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.hello;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Exports Should convert exports.name with same name as the parameter 1`] = `
 "let exports = {}, module = { exports: exports };
 const hello = null;
 exports.hello = hello;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.hello;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Exports Should convert named export 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.hello = Hello;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.hello;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Exports Should convert to default export to ES6 1`] = `
@@ -105,9 +104,9 @@ exports[`CommonJsTransformer Forwards Should convert redirects 2`] = `
 "let exports = {}, module = { exports: exports };
 import WrenchIcon from './icons/WrenchIcon.js';
 exports = { WrenchIcon };
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.WrenchIcon;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as WrenchIcon };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as WrenchIcon };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Import Should convert default import to ES6 1`] = `
@@ -140,16 +139,16 @@ export default exports;"
 exports[`CommonJsTransformer Should read from internal export Should convert to multiple commands 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.lastAttributeNameRegex = exports.createMarker = exports.isTemplatePartActive = void 0;
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.lastAttributeNameRegex, GENERATED_VAR_BY_TRANSFORMER_2 = exports.createMarker, GENERATED_VAR_BY_TRANSFORMER_3 = exports.isTemplatePartActive;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as lastAttributeNameRegex, GENERATED_VAR_BY_TRANSFORMER_2 as createMarker, GENERATED_VAR_BY_TRANSFORMER_3 as isTemplatePartActive };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as lastAttributeNameRegex, GENERATED_VAR_BY_TRANSFORMER_2 as createMarker, GENERATED_VAR_BY_TRANSFORMER_3 as isTemplatePartActive };
+export default exports;"
 `;
 
 exports[`CommonJsTransformer Should read from internal export Should red from internal export "hello" 1`] = `
 "let exports = {}, module = { exports: exports };
 exports.hello = \\"Hello\\";
 console.log(exports.hello);
-export default exports;
 const GENERATED_VAR_BY_TRANSFORMER_1 = exports.hello;
-export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };"
+export { GENERATED_VAR_BY_TRANSFORMER_1 as hello };
+export default exports;"
 `;

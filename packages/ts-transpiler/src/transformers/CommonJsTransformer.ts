@@ -3,6 +3,7 @@ import TypeScript from 'typescript'
 enum KEYNAME {
 	exports = 'exports',
 	module = 'module',
+	default = 'default',
 }
 /*
 Transpile CommonJS to ES6 module
@@ -663,17 +664,8 @@ export default class CommonJsTransformer
 				TypeScript.NodeFlags.Let,
 			),
 		)
-		const exportDefaultStatement: TypeScript.ExportAssignment = TypeScript.factory.createExportAssignment(
-			undefined,
-			undefined,
-			undefined,
-			TypeScript.factory.createIdentifier(KEYNAME.exports),
-		)
-		const statements = [
-			moduleExportStatement,
-			...sourceFile.statements,
-			exportDefaultStatement,
-		]
+
+		const statements = [moduleExportStatement, ...sourceFile.statements]
 		if (exportedNames.length) {
 			const variableDeclarations: TypeScript.VariableDeclaration[] = []
 			const exportSpecifiers: TypeScript.ExportSpecifier[] = []
@@ -711,6 +703,16 @@ export default class CommonJsTransformer
 					),
 				),
 				exportDeclaration,
+			)
+		}
+		if (!exportedNames.includes(KEYNAME.default)) {
+			statements.push(
+				TypeScript.factory.createExportAssignment(
+					undefined,
+					undefined,
+					undefined,
+					TypeScript.factory.createIdentifier(KEYNAME.exports),
+				),
 			)
 		}
 		return TypeScript.factory.updateSourceFile(sourceFile, statements)
