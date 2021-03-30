@@ -456,8 +456,13 @@ export default class CommonJsTransformer
 	private requireTopScope(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
-		const newStatements: TypeScript.VariableStatement[] = []
-		const visit = (node: TypeScript.Node): TypeScript.Node => {
+		const newStatements: (
+			| TypeScript.VariableStatement
+			| TypeScript.ExpressionStatement
+		)[] = []
+		const visit = (
+			node: TypeScript.Node,
+		): TypeScript.Node | TypeScript.Node[] | undefined => {
 			const inRootScope =
 				node?.parent?.parent?.parent?.parent &&
 				TypeScript.isVariableDeclaration(node.parent) &&
@@ -471,24 +476,39 @@ export default class CommonJsTransformer
 				node.expression.text === 'require' &&
 				inRootScope === false
 			) {
-				const newIdentifierName = this.generateUniqueName()
-				newStatements.push(
-					TypeScript.factory.createVariableStatement(
-						undefined,
-						TypeScript.factory.createVariableDeclarationList(
-							[
-								TypeScript.factory.createVariableDeclaration(
-									newIdentifierName,
-									undefined,
-									undefined,
-									node,
-								),
-							],
-							TypeScript.NodeFlags.Let,
+				if (node.parent && TypeScript.isExpressionStatement(node.parent)) {
+					newStatements.push(
+						TypeScript.factory.createExpressionStatement(
+							TypeScript.factory.createCallExpression(
+								node.expression,
+								undefined,
+								node.arguments,
+							),
 						),
-					),
-				)
-				return TypeScript.factory.createIdentifier(newIdentifierName)
+					)
+					return TypeScript.factory.createVoidExpression(
+						TypeScript.factory.createNumericLiteral('0'),
+					)
+				} else {
+					const newIdentifierName = this.generateUniqueName()
+					newStatements.push(
+						TypeScript.factory.createVariableStatement(
+							undefined,
+							TypeScript.factory.createVariableDeclarationList(
+								[
+									TypeScript.factory.createVariableDeclaration(
+										newIdentifierName,
+										undefined,
+										undefined,
+										node,
+									),
+								],
+								TypeScript.NodeFlags.Let,
+							),
+						),
+					)
+					return TypeScript.factory.createIdentifier(newIdentifierName)
+				}
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}

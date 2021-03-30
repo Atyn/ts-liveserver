@@ -19,6 +19,10 @@ describe('CommonJsTransformer', () => {
 			const input = '{ const hello = require("hello.js") }'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
+		it('Should convert require without reference in sub-scope', async () => {
+			const input = 'if(true) { require("hello.js"); }'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
 	})
 	describe('Forwards', () => {
 		it('Should convert redirects', async () => {
@@ -82,6 +86,10 @@ describe('CommonJsTransformer', () => {
 		})
 		it('Should convert ObjectLiteralExpression', async () => {
 			const input = 'module.exports = { a: b, c: d }'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
+		it('Should export one default', async () => {
+			const input = 'exports.default = "hello"'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 		it('Should export nested expression', async () => {
