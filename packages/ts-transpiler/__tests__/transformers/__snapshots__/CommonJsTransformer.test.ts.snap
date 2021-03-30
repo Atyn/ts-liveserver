@@ -100,6 +100,16 @@ else if (typeof module !== 'undefined' && module != null) {
 export default exports;"
 `;
 
+exports[`CommonJsTransformer Exports Should not override current export 1`] = `
+"let exports = {}, module = { exports: exports };
+exports.a = \\"a\\";
+exports.b = \\"b\\";
+export { hello as a };
+export default \\"yoyo\\";
+const GENERATED_VAR_BY_TRANSFORMER_1 = exports.b;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as b };"
+`;
+
 exports[`CommonJsTransformer Forwards Should convert redirects 1`] = `
 "let exports = {}, module = { exports: exports };
 exports = require(\\"./hello.js\\");

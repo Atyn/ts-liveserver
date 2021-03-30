@@ -92,6 +92,15 @@ describe('CommonJsTransformer', () => {
 			const input = 'exports.default = "hello"'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
+		it('Should not override current export', async () => {
+			const input = `
+				exports.a = "a"; 
+				exports.b = "b";
+				export { hello as a };
+				export default "yoyo";
+			`
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
 		it('Should export nested expression', async () => {
 			const input = `
 				(exports = function (key) {
