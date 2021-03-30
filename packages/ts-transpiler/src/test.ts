@@ -4,16 +4,18 @@ import CompilerOptions from './CompilerOptions'
 import TypeScript from 'typescript'
 import Fs from 'fs'
 
-const filePath = './packages/test-environment/src/Test.js'
+// const filePath = '../../test.js'
+const filePath = '../../test.ts'
+// const filePath = '../../XPathCSSGenerator.js'
+// const filePath = './packages/test-environment/src/Test.js'
 // const filePath = './packages/test-environment/src/ReactIndex.js'
 // const filePath = './node_modules/react-dom/index.js'
-
-// const filePath = './node_modules/react-dom/cjs/react-dom.development.js' // './lzString.js'
+// const filePath = '../../node_modules/react-dom/cjs/react-dom.development.js' // './lzString.js'
 
 const transformers: TypeScript.CustomTransformers = {
 	before: [
 		(context) => new CommonJsTransformer(context),
-		(context) => new ResolveTransformer(context),
+		// (context) => new ResolveTransformer(context),
 	],
 }
 

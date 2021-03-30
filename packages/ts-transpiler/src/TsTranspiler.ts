@@ -3,6 +3,9 @@ import Path from 'path'
 import TypeScript from 'typescript'
 import CompilerOptions from './CompilerOptions'
 import AllTransformers from './AllTransformers'
+
+const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json']
+
 export default class TsTranspiler {
 	private compilerOptions: TypeScript.CompilerOptions = CompilerOptions
 	constructor(compilerOptions?: TypeScript.CompilerOptions) {
@@ -28,6 +31,14 @@ export default class TsTranspiler {
 		fileName: string,
 	): Promise<TypeScript.TranspileOutput & { resolvedFilePath: string }> {
 		const resolvedFilePath = await this.resolveFilePath(fileName)
+		if (Path.extname(resolvedFilePath) === '.json') {
+			const fileContent =
+				'export default ' + (await Fs.promises.readFile(resolvedFilePath))
+			return {
+				outputText: fileContent,
+				resolvedFilePath: resolvedFilePath,
+			}
+		}
 		const buffer = await Fs.promises.readFile(resolvedFilePath)
 		return {
 			...(await this.transformCode(buffer.toString(), resolvedFilePath)),
@@ -39,26 +50,14 @@ export default class TsTranspiler {
 			return Path.resolve(fileName)
 		}
 		const parsedFileName = Path.parse(fileName)
-		if (
-			await this.fileExists(
-				Path.resolve(parsedFileName.dir, parsedFileName.name + '.js'),
-			)
-		) {
-			return Path.resolve(parsedFileName.dir, parsedFileName.name + '.js')
-		}
-		if (
-			await this.fileExists(
-				Path.resolve(parsedFileName.dir, parsedFileName.name + '.tsx'),
-			)
-		) {
-			return Path.resolve(parsedFileName.dir, parsedFileName.name + '.tsx')
-		}
-		if (
-			await this.fileExists(
-				Path.resolve(parsedFileName.dir, parsedFileName.name + '.ts'),
-			)
-		) {
-			return Path.resolve(parsedFileName.dir, parsedFileName.name + '.ts')
+		for (const extension of RESOLVE_EXTENSIONS) {
+			if (
+				await this.fileExists(
+					Path.resolve(parsedFileName.dir, parsedFileName.name + extension),
+				)
+			) {
+				return Path.resolve(parsedFileName.dir, parsedFileName.name + extension)
+			}
 		}
 		throw new Error('Could not find file' + fileName)
 	}

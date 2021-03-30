@@ -5,6 +5,7 @@ const CompilerOptions: TypeScript.CompilerOptions = {
 	jsx: TypeScript.JsxEmit.React,
 	checkJs: false,
 	noResolve: false,
+	resolveJsonModule: true,
 	esModuleInterop: true,
 	skipLibCheck: true,
 	target: TypeScript.ScriptTarget.ES2020,
