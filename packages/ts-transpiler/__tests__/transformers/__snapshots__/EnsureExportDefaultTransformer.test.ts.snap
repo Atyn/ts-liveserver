@@ -1,0 +1,15 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`EnsureExportDefaultTransformer Should have default export redirects 1`] = `
+"export {};
+export default null;"
+`;
+
+exports[`EnsureExportDefaultTransformer Should not add default export 1`] = `
+"export default class Hello {
+}"
+`;
+
+exports[`EnsureExportDefaultTransformer Should not add default export 2`] = `"export { a as default };"`;
+
+exports[`EnsureExportDefaultTransformer Should not add default export 3`] = `"export default hello;"`;
