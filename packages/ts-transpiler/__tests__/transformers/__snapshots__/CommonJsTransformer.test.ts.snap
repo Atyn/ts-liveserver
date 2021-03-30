@@ -80,6 +80,13 @@ exports[`CommonJsTransformer Exports Should export nested expression 1`] = `
 export default exports;"
 `;
 
+exports[`CommonJsTransformer Exports Should export one default 1`] = `
+"let exports = {}, module = { exports: exports };
+exports.default = \\"hello\\";
+const GENERATED_VAR_BY_TRANSFORMER_1 = exports.default;
+export { GENERATED_VAR_BY_TRANSFORMER_1 as default };"
+`;
+
 exports[`CommonJsTransformer Exports Should move exports to top scope 1`] = `
 "let exports = {}, module = { exports: exports };
 if (typeof define === 'function' && define.amd) {
@@ -126,6 +133,15 @@ exports[`CommonJsTransformer Import Should convert require in sub-scope 1`] = `
 import GENERATED_VAR_BY_TRANSFORMER_1 from \\"hello.js\\";
 {
     const hello = GENERATED_VAR_BY_TRANSFORMER_1;
+}
+export default exports;"
+`;
+
+exports[`CommonJsTransformer Import Should convert require without reference in sub-scope 1`] = `
+"let exports = {}, module = { exports: exports };
+import \\"hello.js\\";
+if (true) {
+    void 0;
 }
 export default exports;"
 `;
