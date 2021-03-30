@@ -92,6 +92,10 @@ describe('CommonJsTransformer', () => {
 			const input = 'exports.default = "hello"'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
+		it('Should export one default', async () => {
+			const input = 'export default class Hello {}; exports.hello = "hello"'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
 		it('Should not override current export', async () => {
 			const input = `
 				exports.a = "a"; 

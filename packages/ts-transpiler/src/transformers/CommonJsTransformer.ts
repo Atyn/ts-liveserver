@@ -671,6 +671,16 @@ export default class CommonJsTransformer
 				for (const element of statement.exportClause.elements) {
 					list.push(element.name.text)
 				}
+			} else if (
+				statement.modifiers &&
+				statement.modifiers.some(
+					(node) => node.kind === TypeScript.SyntaxKind.ExportKeyword,
+				) &&
+				statement.modifiers.some(
+					(node) => node.kind === TypeScript.SyntaxKind.DefaultKeyword,
+				)
+			) {
+				list.push(KEYNAME.default)
 			}
 		}
 		return list
