@@ -617,7 +617,9 @@ export default class CommonJsTransformer
 			...sourceFile.statements,
 		])
 	}
-	private getAllExportedNames(sourceFile: TypeScript.SourceFile): string[] {
+	private getAllCommonJsExportedNames(
+		sourceFile: TypeScript.SourceFile,
+	): string[] {
 		const exportedNames: Set<string> = new Set()
 		const visit = (
 			node: TypeScript.Node,
@@ -655,10 +657,31 @@ export default class CommonJsTransformer
 		TypeScript.visitEachChild(sourceFile, visit, this.context)
 		return Array.from(exportedNames)
 	}
+	private getAllEsmExportedNames(sourceFile: TypeScript.SourceFile): string[] {
+		const list: string[] = []
+		for (const statement of sourceFile.statements) {
+			if (TypeScript.isExportAssignment(statement)) {
+				list.push(KEYNAME.default)
+			} else if (
+				TypeScript.isExportDeclaration(statement) &&
+				statement.exportClause &&
+				TypeScript.isNamedExports(statement.exportClause) &&
+				statement.exportClause.elements
+			) {
+				for (const element of statement.exportClause.elements) {
+					list.push(element.name.text)
+				}
+			}
+		}
+		return list
+	}
 	private convertToEsmExport(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
-		const exportedNames = this.getAllExportedNames(sourceFile)
+		const esmExportedNames = this.getAllEsmExportedNames(sourceFile)
+		const exportedNames = this.getAllCommonJsExportedNames(sourceFile).filter(
+			(name) => !esmExportedNames.includes(name),
+		)
 		const moduleExportStatement = TypeScript.factory.createVariableStatement(
 			undefined,
 			TypeScript.factory.createVariableDeclarationList(
@@ -684,7 +707,6 @@ export default class CommonJsTransformer
 				TypeScript.NodeFlags.Let,
 			),
 		)
-
 		const statements = [moduleExportStatement, ...sourceFile.statements]
 		if (exportedNames.length) {
 			const variableDeclarations: TypeScript.VariableDeclaration[] = []
@@ -725,7 +747,11 @@ export default class CommonJsTransformer
 				exportDeclaration,
 			)
 		}
-		if (!exportedNames.includes(KEYNAME.default)) {
+		// If there is no default export already
+		if (
+			!exportedNames.includes(KEYNAME.default) &&
+			!esmExportedNames.includes(KEYNAME.default)
+		) {
 			statements.push(
 				TypeScript.factory.createExportAssignment(
 					undefined,
