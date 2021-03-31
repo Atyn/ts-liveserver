@@ -122,7 +122,8 @@ export { GENERATED_VAR_BY_TRANSFORMER_1 as b };"
 
 exports[`CommonJsTransformer Forwards Should convert redirects 1`] = `
 "let exports = {}, module = { exports: exports };
-exports = require(\\"./hello.js\\");
+import GENERATED_VAR_BY_TRANSFORMER_1 from \\"./hello.js\\";
+exports = GENERATED_VAR_BY_TRANSFORMER_1;
 export * from \\"./hello.js\\";
 export default exports;"
 `;
@@ -169,6 +170,7 @@ export default exports;"
 exports[`CommonJsTransformer Import Should convert simple import 1`] = `
 "let exports = {}, module = { exports: exports };
 import \\"./hello.ts\\";
+void 0;
 export default exports;"
 `;
 

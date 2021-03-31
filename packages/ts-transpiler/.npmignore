@@ -2,4 +2,5 @@ node_modules
 tmp
 package-lock.json
 npm-shrinkwrap.json
-__test__
+__tests__
+src
