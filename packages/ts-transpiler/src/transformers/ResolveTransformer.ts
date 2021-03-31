@@ -26,7 +26,6 @@ export default class ResolveTransformer
 			) {
 				const resolvedName = new DependencyResolver(
 					sourceFile.fileName,
-					this.context,
 				).resolveRelativeDependency(node.moduleSpecifier.text)
 				return TypeScript.factory.updateImportDeclaration(
 					node,
@@ -43,7 +42,6 @@ export default class ResolveTransformer
 			) {
 				const resolvedName = new DependencyResolver(
 					sourceFile.fileName,
-					this.context,
 				).resolveRelativeDependency(node.moduleSpecifier.text)
 				return TypeScript.factory.updateExportDeclaration(
 					node,
@@ -70,10 +68,9 @@ export default class ResolveTransformer
 				node === node.parent.arguments[0]
 			) {
 				return TypeScript.factory.createStringLiteral(
-					new DependencyResolver(
-						sourceFile.fileName,
-						this.context,
-					).resolveRelativeDependency(node.text),
+					new DependencyResolver(sourceFile.fileName).resolveRelativeDependency(
+						node.text,
+					),
 				)
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
@@ -102,7 +99,6 @@ export default class ResolveTransformer
 			return TypeScript.factory.createStringLiteral(
 				new DependencyResolver(
 					node.getSourceFile().fileName,
-					this.context,
 				).resolveRelativeDependency(node.text),
 			)
 		}
