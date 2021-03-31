@@ -452,7 +452,7 @@ export default class CommonJsTransformer
 		}
 		return TypeScript.visitNode(sourceFile, visit)
 	}
-	// Move all require-calls to top-scope
+	// Move all require-calls to top-scope (const hello = require('hello.js'))
 	private requireTopScope(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
@@ -463,19 +463,23 @@ export default class CommonJsTransformer
 		const visit = (
 			node: TypeScript.Node,
 		): TypeScript.Node | TypeScript.Node[] | undefined => {
-			const inRootScope =
+			// No need to convert already correct statements (const hello = require('hello.js'))
+			if (
 				node?.parent?.parent?.parent?.parent &&
 				TypeScript.isVariableDeclaration(node.parent) &&
 				TypeScript.isVariableDeclarationList(node.parent.parent) &&
 				TypeScript.isVariableStatement(node.parent.parent.parent) &&
 				TypeScript.isSourceFile(node.parent.parent.parent.parent)
+			) {
+				return TypeScript.visitEachChild(node, visit, this.context)
+			}
 			if (
 				TypeScript.isCallExpression(node) &&
 				TypeScript.isIdentifier(node.expression) &&
 				node.arguments.length === 1 &&
-				node.expression.text === 'require' &&
-				inRootScope === false
+				node.expression.text === 'require'
 			) {
+				// require() without a reference
 				if (node.parent && TypeScript.isExpressionStatement(node.parent)) {
 					newStatements.push(
 						TypeScript.factory.createExpressionStatement(
@@ -490,6 +494,7 @@ export default class CommonJsTransformer
 						TypeScript.factory.createNumericLiteral('0'),
 					)
 				} else {
+					// require() with a reference (hello = require('hello.js'))
 					const newIdentifierName = this.generateUniqueName()
 					newStatements.push(
 						TypeScript.factory.createVariableStatement(

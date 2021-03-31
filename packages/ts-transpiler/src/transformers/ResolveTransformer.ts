@@ -24,17 +24,16 @@ export default class ResolveTransformer
 				TypeScript.isImportDeclaration(node) &&
 				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
+				const resolvedName = new DependencyResolver(
+					sourceFile.fileName,
+					this.context,
+				).resolveRelativeDependency(node.moduleSpecifier.text)
 				return TypeScript.factory.updateImportDeclaration(
 					node,
 					node.decorators,
 					node.modifiers,
 					node.importClause,
-					TypeScript.factory.createStringLiteral(
-						new DependencyResolver(
-							sourceFile.fileName,
-							this.context,
-						).resolveRelativeDependency(node.moduleSpecifier.text),
-					),
+					TypeScript.factory.createStringLiteral(resolvedName),
 				)
 			}
 			if (
@@ -42,13 +41,17 @@ export default class ResolveTransformer
 				node.moduleSpecifier &&
 				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
+				const resolvedName = new DependencyResolver(
+					sourceFile.fileName,
+					this.context,
+				).resolveRelativeDependency(node.moduleSpecifier.text)
 				return TypeScript.factory.updateExportDeclaration(
 					node,
 					undefined,
 					undefined,
 					node.isTypeOnly,
 					undefined,
-					node.moduleSpecifier,
+					TypeScript.factory.createStringLiteral(resolvedName),
 				)
 			}
 			return node
