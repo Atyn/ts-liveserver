@@ -16,6 +16,7 @@
 		"ts-jest": "^26.1.0"
 	},
 	"dependencies": {
-		"typescript": "4.x.x"
+		"typescript": "4.x.x",
+		"enhanced-resolve": "5.x.x"
 	}
 }

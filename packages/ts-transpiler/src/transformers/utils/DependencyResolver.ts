@@ -1,23 +1,27 @@
 import TypeScript from 'typescript'
 import Path from 'path'
+import Fs from 'fs'
+import Resolve from 'enhanced-resolve'
+
+const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json']
 
 export default class DependencyResolver {
-	private context: TypeScript.TransformationContext
+	private resolver = Resolve.create.sync({
+		extensions: RESOLVE_EXTENSIONS,
+	})
 	private fileName: string
-	constructor(fileName: string, context: TypeScript.TransformationContext) {
+	constructor(fileName: string) {
 		this.fileName = fileName
-		this.context = context
 	}
 	public resolveRelativeDependency(dependencyFileName: string): string {
 		return this.resolveDependencyName(this.fileName, dependencyFileName)
 	}
-
 	// Return e.g. ./hello/module.js
 	private resolveDependencyName(
 		parentPath: string,
-		dendencyName: string,
+		dependencyName: string,
 	): string {
-		const absolutePath = this.resolveDependencyPath(parentPath, dendencyName)
+		const absolutePath = this.resolveDependencyPath(parentPath, dependencyName)
 		const pathObj = Path.parse(absolutePath)
 		const relativeDir =
 			Path.relative(Path.dirname(parentPath), pathObj.dir) || '.'
@@ -30,28 +34,18 @@ export default class DependencyResolver {
 	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
 	private resolveDependencyPath(
 		parentPath: string,
-		dendencyName: string,
+		dependencyName: string,
 	): string {
-		const resolveResults = TypeScript.resolveModuleName(
-			dendencyName,
-			parentPath,
-			this.context.getCompilerOptions(),
-			TypeScript.createCompilerHost(this.context.getCompilerOptions()),
+		const withoutExtension = dependencyName.replace(
+			Path.extname(dependencyName),
+			'',
 		)
-		if (resolveResults?.resolvedModule?.isExternalLibraryImport) {
-			const nodeResolve = require.resolve(dendencyName, {
-				paths: [Path.dirname(parentPath)],
-			})
-			if (nodeResolve) {
-				return nodeResolve
-			}
-		}
-		const resolvedFileName = resolveResults?.resolvedModule?.resolvedFileName
-		if (!resolvedFileName) {
+		const result = this.resolver({}, Path.dirname(parentPath), withoutExtension)
+		if (result === false) {
 			throw new Error(
-				'Could not resolve' + dendencyName + 'from module' + parentPath,
+				'Could not resolve ' + dependencyName + ' from ' + parentPath,
 			)
 		}
-		return resolvedFileName
+		return result
 	}
 }
