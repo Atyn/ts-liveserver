@@ -3,8 +3,8 @@
 	"version": "0.0.0",
 	"main": "dist/MiddleWare.js",
 	"scripts": {
-		"build": "tsc",
-		"watch": "tsc --watch"
+		"build": "tsc --build",
+		"watch": "tsc --build --watch"
 	},
 	"devDependencies": {
 		"@types/express": "^4.17.9",
