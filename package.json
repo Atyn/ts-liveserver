@@ -3,7 +3,7 @@
 	"version": "0.0.0",
 	"description": "A HTTP-server that compiles TypeScript modules to es6-modules that is natively supported by browsers",
 	"scripts": {
-		"postinstall": "lerna bootstrap --hoist",
+		"postinstall": "lerna bootstrap --hoist && update-ts-references",
 		"build": "lerna run build",
 		"watch": "lerna run watch --parallel",
 		"clean": "git clean -Xdf",
@@ -34,6 +34,7 @@
 		"eslint-plugin-json": "^2.0.1",
 		"eslint-plugin-prettier": "^3.2.0",
 		"prettier": "^2.2.1",
+		"update-ts-references": "^2.0.0",
 		"typescript": "4.x.x"
 	}
 }

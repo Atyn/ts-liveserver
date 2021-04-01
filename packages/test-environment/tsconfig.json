@@ -8,5 +8,13 @@
 		"noImplicitAny": false,
 		"baseUrl": "."
 	},
-	"include": ["src", "src/**/*.json", "src/*.json"]
+	"include": ["src", "src/**/*.json", "src/*.json"],
+	"references": [
+		{
+			"path": "../deploy"
+		},
+		{
+			"path": "../server"
+		}
+	]
 }
