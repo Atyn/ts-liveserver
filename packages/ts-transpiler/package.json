@@ -1,6 +1,7 @@
 {
 	"name": "@ts-liveserver/ts-transpiler",
 	"version": "0.0.0",
+	"license": "ISC",
 	"main": "dist/index.js",
 	"publishConfig": {
 		"access": "public"
