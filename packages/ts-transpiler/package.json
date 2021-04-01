@@ -3,8 +3,8 @@
 	"version": "0.0.0",
 	"main": "dist/index.js",
 	"scripts": {
-		"build": "tsc",
-		"watch": "tsc --watch",
+		"build": "tsc --build",
+		"watch": "tsc --build --watch",
 		"test:watch": "jest --watch",
 		"test:update-snapshot": "jest --updateSnapshot",
 		"test": "jest"
