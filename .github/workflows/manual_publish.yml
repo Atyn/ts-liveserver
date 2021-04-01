@@ -5,6 +5,8 @@ on:
       version:
         description: '1.2.3'
         required: true
+    branches:
+      - master
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -20,7 +22,7 @@ jobs:
       - name: Checkout release branch
         run: |
           git checkout -b release/${{ github.event.inputs.version }} origin/master
-          git push origin release/${{ needs.check-next-version.outputs.next_version }}
+          git push origin release/${{ github.event.inputs.version }}
       - run: npm ci
       - run: npm run build
       - name: Set version
