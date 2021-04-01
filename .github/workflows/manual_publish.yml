@@ -21,13 +21,13 @@ jobs:
       - run: echo "Release v${{ github.event.inputs.version }}"
       - name: Checkout release branch
         run: |
-          git checkout -b release/${{ github.event.inputs.version }} origin/master
-          git push origin release/${{ github.event.inputs.version }}
           email=$(git log --format='%ae' HEAD^!)
           echo "${{ github.actor }}"
           echo "${email}"
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${email}"
+          git checkout -b release/${{ github.event.inputs.version }} origin/master
+          git push origin release/${{ github.event.inputs.version }}
       - run: npm ci
       - run: npm run build
       - name: Set version
