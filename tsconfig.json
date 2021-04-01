@@ -13,5 +13,22 @@
 		"incremental": true,
 		"jsx": "react",
 		"lib": ["es2015", "es2016", "es2017", "es2018", "es2019", "es2020", "dom"]
-	}
+	},
+	"references": [
+		{
+			"path": "packages/deploy"
+		},
+		{
+			"path": "packages/express-middleware"
+		},
+		{
+			"path": "packages/server"
+		},
+		{
+			"path": "packages/test-environment"
+		},
+		{
+			"path": "packages/ts-transpiler"
+		}
+	]
 }

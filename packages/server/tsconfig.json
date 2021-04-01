@@ -6,5 +6,10 @@
 		"tsBuildInfoFile": "tmp/tsbuildinfo",
 		"baseUrl": "."
 	},
-	"include": ["src", "src/**/*.json", "src/*.json"]
+	"include": ["src", "src/**/*.json", "src/*.json"],
+	"references": [
+		{
+			"path": "../express-middleware"
+		}
+	]
 }
