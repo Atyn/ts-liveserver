@@ -29,20 +29,17 @@ export default class TsTranspiler {
 	}
 	public async transformFile(
 		fileName: string,
-	): Promise<TypeScript.TranspileOutput & { resolvedFilePath: string }> {
-		const resolvedFilePath = await this.resolveFilePath(fileName)
-		if (Path.extname(resolvedFilePath) === '.json') {
+	): Promise<TypeScript.TranspileOutput> {
+		if (Path.extname(fileName) === '.json') {
 			const fileContent =
-				'export default ' + (await Fs.promises.readFile(resolvedFilePath))
+				'export default ' + (await Fs.promises.readFile(fileName))
 			return {
 				outputText: fileContent,
-				resolvedFilePath: resolvedFilePath,
 			}
 		}
-		const buffer = await Fs.promises.readFile(resolvedFilePath)
+		const buffer = await Fs.promises.readFile(fileName)
 		return {
-			...(await this.transformCode(buffer.toString(), resolvedFilePath)),
-			resolvedFilePath: resolvedFilePath,
+			...(await this.transformCode(buffer.toString(), fileName)),
 		}
 	}
 	public async resolveFilePath(fileName: string): Promise<string> {

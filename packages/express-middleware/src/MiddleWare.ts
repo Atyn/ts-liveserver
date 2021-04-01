@@ -17,10 +17,11 @@ export default class MiddleWare {
 	): Promise<void> {
 		switch (Path.extname(request.path)) {
 			case '.js': {
-				const result = await this.tsTranspiler.transformFile(
+				const resolvedFilePath = await this.tsTranspiler.resolveFilePath(
 					Path.resolve(this.path + request.path),
 				)
-				const info = await Fs.promises.stat(result.resolvedFilePath)
+				const result = await this.tsTranspiler.transformFile(resolvedFilePath)
+				const info = await Fs.promises.stat(resolvedFilePath)
 				response.set({
 					'Content-Type': 'application/javascript',
 					ETag: this.startTime + '-' + info.mtimeMs,
