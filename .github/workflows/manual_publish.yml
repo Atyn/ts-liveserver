@@ -24,9 +24,6 @@ jobs:
       - run: echo "Release v${{ github.event.inputs.version }}"
       - name: Checkout release branch
         run: |
-          email=$(git log --format='%ae' HEAD^!)
-          echo "${{ github.actor }}"
-          echo "${email}"
           git config --global user.name "${{ github.actor }}"
           git config --global user.email "${email}"
           git checkout -b release/${{ github.event.inputs.version }} origin/master
@@ -34,7 +31,7 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Set version
-        run: npm run version -- ${{ github.event.inputs.version }}
+        run: npm run version -- ${{ github.event.inputs.version }} --yes
       - name: 'publish'
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" > ./.npmrc
