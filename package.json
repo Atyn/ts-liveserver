@@ -1,7 +1,6 @@
 {
-	"name": "ts-liveserver",
-	"version": "0.0.0",
-	"description": "A HTTP-server that compiles TypeScript modules to es6-modules that is natively supported by browsers",
+	"name": "root",
+	"private": true,
 	"scripts": {
 		"postinstall": "lerna bootstrap --hoist && update-ts-references",
 		"build": "lerna run build",
@@ -17,13 +16,8 @@
 		"lint": "eslint --max-warnings 0 --ignore-path .gitignore . && prettier --check --ignore-path .gitignore .",
 		"lint:fix": "eslint --fix --max-warnings 0 --ignore-path .gitignore . && prettier --write --ignore-path .gitignore ."
 	},
-	"engines": {
-		"node": ">=12.13"
-	},
-	"dependencies": {
-		"lerna": "^3.22.1"
-	},
 	"devDependencies": {
+		"lerna": "^3.22.1",
 		"@typescript-eslint/eslint-plugin": "^2.5.0",
 		"@typescript-eslint/parser": "^4.13.0",
 		"concurrently": "4.1.0",
@@ -36,5 +30,8 @@
 		"prettier": "^2.2.1",
 		"update-ts-references": "^2.0.0",
 		"typescript": "4.x.x"
+	},
+	"engines": {
+		"node": ">=12.13"
 	}
 }
