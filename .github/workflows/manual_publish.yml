@@ -31,8 +31,8 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: Set version
-        run: npm run version -- ${{ github.event.inputs.version }} --yes
+        run: npm run version -- "${{ github.event.inputs.version }}" --yes
       - name: 'publish'
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" > ./.npmrc
-          npm run publish
+          npm run publish --yes
