@@ -8,7 +8,7 @@
 		"watch": "lerna run watch --parallel",
 		"clean": "git clean -Xdf",
 		"version": "lerna version --no-private --no-push",
-		"publish": "lerna publish from-git --no-private --no-push",
+		"publish": "lerna publish from-package --no-private --no-push",
 		"test": "lerna run test --stream",
 		"deploy": "npm run build && lerna run --stream test-environment:deploy",
 		"_deploy": "npm run build && node ./packages/deploy/dist/cli.js --directory='./tmp/deploy' 'packages/test-environment/src/App.ts'",
