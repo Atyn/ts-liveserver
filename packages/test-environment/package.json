@@ -1,6 +1,7 @@
 {
 	"name": "@ts-liveserver/test-environment",
 	"private": true,
+	"license": "ISC",
 	"version": "0.0.0",
 	"scripts": {
 		"test-environment:serve": "ts-liveserver ../../",
