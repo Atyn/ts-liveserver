@@ -1,5 +1,5 @@
 import TypeScript from 'typescript'
-import DependencyResolver from './utils/DependencyResolver'
+import DependencyResolver from '../utils/DependencyResolver'
 
 export default class ResolveTransformer
 	implements TypeScript.CustomTransformer {

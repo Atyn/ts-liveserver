@@ -1,6 +1,6 @@
 import TypeScript from 'typescript'
-import BinaryExpressionsReducer from './utils/BinaryExpressionsReducer'
-import IfStatementReducer from './utils/IfStatementReducer'
+import BinaryExpressionsReducer from '../utils/BinaryExpressionsReducer'
+import IfStatementReducer from '../utils/IfStatementReducer'
 
 /*
 Replaces process.env.NODE_ENV in code
@@ -19,12 +19,14 @@ export default class CodeOptimizerTransformer
 			this.context.getCompilerOptions(),
 		)
 	}
-	transformSourceFile(node: TypeScript.SourceFile): TypeScript.SourceFile {
+	public transformSourceFile(
+		node: TypeScript.SourceFile,
+	): TypeScript.SourceFile {
 		return this.ifStatementReducer.transformSourceFile(
 			this.binaryExpressionsReducer.transformSourceFile(node),
 		)
 	}
-	transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
+	public transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
 		return node
 	}
 }

@@ -1,13 +1,13 @@
-import TypeScript from 'typescript'
 import Path from 'path'
-import Fs from 'fs'
 import Resolve from 'enhanced-resolve'
 
-const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json']
+const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
 
 export default class DependencyResolver {
 	private resolver = Resolve.create.sync({
+		mainFields: ['browser', 'module', 'main'],
 		extensions: RESOLVE_EXTENSIONS,
+		aliasFields: ['browser'],
 	})
 	private fileName: string
 	constructor(fileName: string) {
@@ -36,11 +36,9 @@ export default class DependencyResolver {
 		parentPath: string,
 		dependencyName: string,
 	): string {
-		const withoutExtension = dependencyName.replace(
-			Path.extname(dependencyName),
-			'',
-		)
-		const result = this.resolver({}, Path.dirname(parentPath), withoutExtension)
+		const extension = Path.extname(dependencyName)
+		const directory = Path.dirname(parentPath)
+		const result = this.resolver({}, directory, dependencyName)
 		if (result === false) {
 			throw new Error(
 				'Could not resolve ' + dependencyName + ' from ' + parentPath,

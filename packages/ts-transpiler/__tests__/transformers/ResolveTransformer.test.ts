@@ -1,5 +1,5 @@
 import ResolveTransformer from '../../src/transformers/ResolveTransformer'
-import DependencyResolver from '../../src/transformers/utils/DependencyResolver'
+import DependencyResolver from '../../src/utils/DependencyResolver'
 import TypeScript from 'typescript'
 
 describe('ResolveTransformer', () => {
