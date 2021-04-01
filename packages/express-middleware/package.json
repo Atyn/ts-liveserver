@@ -1,6 +1,9 @@
 {
 	"name": "@ts-liveserver/express-middleware",
 	"version": "0.0.0",
+	"publishConfig": {
+		"access": "public"
+	},
 	"main": "dist/MiddleWare.js",
 	"scripts": {
 		"build": "tsc --build",
