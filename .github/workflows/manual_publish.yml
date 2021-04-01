@@ -35,4 +35,6 @@ jobs:
       - name: 'publish'
         run: |
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" > ./.npmrc
+          npm whoami
           npm run publish -- --yes
+          git push
