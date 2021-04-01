@@ -1,6 +1,5 @@
 {
 	"name": "@ts-liveserver/express-middleware",
-	"private": true,
 	"version": "0.0.0",
 	"main": "dist/MiddleWare.js",
 	"scripts": {
@@ -15,7 +14,6 @@
 		"typescript": "4.x.x"
 	},
 	"dependencies": {
-		"ts-node": "^9.1.0",
 		"express": "^4.17.1",
 		"@ts-liveserver/ts-transpiler": "^0.0.0"
 	}

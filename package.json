@@ -7,7 +7,7 @@
 		"build": "lerna run build",
 		"watch": "lerna run watch --parallel",
 		"clean": "git clean -Xdf",
-		"version": "lerna version --no-private --no-push --conventional-commits",
+		"version": "lerna version --no-private --no-push",
 		"publish": "lerna publish from-git --no-private --no-push",
 		"test": "lerna run test --stream",
 		"deploy": "npm run build && lerna run --stream test-environment:deploy",

@@ -1,6 +1,7 @@
 {
 	"name": "@ts-liveserver/deploy",
 	"version": "0.0.0",
+	"private": true,
 	"main": "dist/index.js",
 	"bin": {
 		"deploy": "dist/cli.js"

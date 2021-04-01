@@ -16,11 +16,16 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: ${{ matrix.node-version }}
+      - run: echo "Release v${{ github.event.inputs.version }}"
+      - name: Checkout release branch
+        run: |
+          git checkout -b release/${{ github.event.inputs.version }} origin/master
+          git push origin release/${{ needs.check-next-version.outputs.next_version }}
       - run: npm ci
       - run: npm run build
+      - name: Set version
+        run: npm run version -- ${{ github.event.inputs.version }}
       - name: 'publish'
         run: |
-          cd packages/ts-transpiler
           echo "//registry.npmjs.org/:_authToken=${{ secrets.NPM_PUBLISH_TOKEN }}" > ./.npmrc
-          npm version v${{ github.event.inputs.version }}
-          npm publish
+          npm run publish
