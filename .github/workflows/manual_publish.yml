@@ -23,6 +23,9 @@ jobs:
         run: |
           git checkout -b release/${{ github.event.inputs.version }} origin/master
           git push origin release/${{ github.event.inputs.version }}
+          email=$(git log --format='%ae' HEAD^!)
+          git config --global user.name "${{ github.actor }}"
+          git config --global user.email "${email}"
       - run: npm ci
       - run: npm run build
       - name: Set version
