@@ -1,9 +1,17 @@
-A HTTP-server that can serve TypeScript code and compiles just-in-time to ES6 and reports errors as they are encountered.
+A superfast HTTP-server that compiles just-in-time to ES6 modules that browser can execute. Starts to serve your TypeScript project within a second!
+
+## Features
+
+- TypeScript
+- Convert TSX & JSX
+- JSON
+- CommonJS
+- Sourcemaps for .ts, tsx and .jsx files
 
 ## Start server
 
 ```bash
-npx ts-liveserver
+npx @ts-liveserver/server
 ```
 
 ## Open web browser
@@ -16,6 +24,13 @@ npx ts-liveserver
 </script>
 ```
 
-## Source maps
+## How does it work?
 
-Sourcemaps are also compiled when requested by browser
+I handles request using Express and respond with a
+
+## Upcoming features
+
+- Building
+- Watch
+- Reducing import forwards (no unnecessary index.js calls)
+- TypeScript diagnostic reporting in terminal
