@@ -7,10 +7,11 @@ const inputFiles = getInputFiles()
 const outputDirectory = getOutputDirectory()
 
 const transpiler = new TsTranspiler()
-const deployer = new Deployer(
-	outputDirectory,
-	async (fileName) => (await transpiler.transformFile(fileName)).outputText,
-)
+const deployer = new Deployer(outputDirectory, async (fileName) => {
+	const resolvedFileName = await transpiler.resolveFilePath(fileName)
+	const result = await transpiler.transformFile(resolvedFileName)
+	return result.outputText
+})
 // eslint-disable-next-line no-console
 console.log(`Deploy directory: ${outputDirectory}`)
 // eslint-disable-next-line no-console
