@@ -1,6 +1,6 @@
 {
 	"name": "@ts-liveserver/ts-transpiler",
-	"version": "0.0.0",
+	"version": "0.1.0",
 	"license": "ISC",
 	"main": "dist/index.js",
 	"publishConfig": {
@@ -20,7 +20,7 @@
 		"ts-jest": "^26.1.0"
 	},
 	"dependencies": {
-		"typescript": "4.x.x",
-		"enhanced-resolve": "5.x.x"
+		"enhanced-resolve": "5.x.x",
+		"typescript": "4.x.x"
 	}
 }
