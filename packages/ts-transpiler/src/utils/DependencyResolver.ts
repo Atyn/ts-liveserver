@@ -25,18 +25,15 @@ export default class DependencyResolver {
 		const pathObj = Path.parse(absolutePath)
 		const relativeDir =
 			Path.relative(Path.dirname(parentPath), pathObj.dir) || '.'
-		const result = relativeDir + '/' + pathObj.name + pathObj.ext
-		if (result.startsWith('.')) {
-			return result.replace(/\.(ts|tsx|jsx|json)$/, '.js')
-		}
-		return './' + result.replace(/\.(ts|tsx|jsx|json)$/, '.js')
+		const result = relativeDir + '/' + pathObj.name + '.js'
+		const posixResult = Path.posix.normalize(result).replace(/\\/g, '/')
+		return posixResult.startsWith('.') ? posixResult : './' + posixResult
 	}
 	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
 	private resolveDependencyPath(
 		parentPath: string,
 		dependencyName: string,
 	): string {
-		const extension = Path.extname(dependencyName)
 		const directory = Path.dirname(parentPath)
 		const result = this.resolver({}, directory, dependencyName)
 		if (result === false) {
