@@ -3,7 +3,15 @@ import Path from 'path'
 import Fs from 'fs'
 import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
 
+const CACHE_DIRECTORY = Path.sep + 'node_modules' + Path.sep
+
+type CacheObject = {
+	mTime: number
+	content: string
+}
+
 export default class MiddleWare {
+	private cache: Record<string, CacheObject> = {}
 	private path: string
 	private startTime = new Date().getTime()
 	private tsTranspiler = new TsTranspiler({ inlineSourceMap: true })
@@ -20,50 +28,41 @@ export default class MiddleWare {
 				const resolvedFilePath = await this.tsTranspiler.resolveFilePath(
 					Path.resolve(this.path + request.path),
 				)
-				const result = await this.tsTranspiler.transformFile(resolvedFilePath)
 				const info = await Fs.promises.stat(resolvedFilePath)
+				const content = await this.getFileContent(
+					resolvedFilePath,
+					info.mtimeMs,
+				)
 				response.set({
 					'Content-Type': 'application/javascript',
 					ETag: this.startTime + '-' + info.mtimeMs,
 				})
-				response.send(result.outputText)
+				response.send(content)
 				break
 			}
 			default:
 				next()
 		}
 	}
-	async fileExists(path: string) {
-		try {
-			await Fs.promises.readFile(path)
-		} catch (error) {
-			return false
+	private async getFileContent(
+		filePath: string,
+		mTime: number,
+	): Promise<string> {
+		if (!filePath.includes(CACHE_DIRECTORY)) {
+			const result = await this.tsTranspiler.transformFile(filePath)
+			return result.outputText
 		}
-		return true
+		const cacheObject = this.cache[filePath]
+		// Fetch cache?
+		if (cacheObject && cacheObject.mTime === mTime) {
+			return cacheObject.content
+		}
+		const result = await this.tsTranspiler.transformFile(filePath)
+		// Set cache
+		this.cache[filePath] = {
+			mTime: mTime,
+			content: result.outputText,
+		}
+		return result.outputText
 	}
 }
-
-/*
-export default function MiddleWare(path = '.') {
-	const tsTranspiler = new TsTranspiler()
-	return async function (
-		request: Express.Request,
-		response: Express.Response,
-		next: () => void,
-	) {
-		switch (Path.extname(request.path)) {
-			case '.tsx':
-			case '.ts':
-			case '.js':
-			case '.jsx':
-				response.set({ 'Content-Type': 'application/javascript' })
-				const fileName = Path.resolve(path + request.path)
-				response.send(await tsTranspiler.transformFile(fileName))
-				break
-			default:
-				return next()
-		}
-		return undefined
-	}
-}
-*/
