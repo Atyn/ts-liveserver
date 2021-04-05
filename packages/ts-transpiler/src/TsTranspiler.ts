@@ -58,9 +58,9 @@ export default class TsTranspiler {
 		}
 		throw new Error('Could not find file' + fileName)
 	}
-	public async fileExists(path: string) {
+	private async fileExists(path: string) {
 		try {
-			await Fs.promises.readFile(path)
+			await Fs.promises.stat(path)
 		} catch (error) {
 			return false
 		}
