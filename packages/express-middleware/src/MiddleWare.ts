@@ -5,7 +5,6 @@ import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
 
 const CACHE_DIRECTORY = Path.sep + 'node_modules' + Path.sep
 
-
 type Options = {
 	watch?: boolean
 }
@@ -19,7 +18,7 @@ export default class MiddleWare {
 	private path: string
 	private startTime = new Date().getTime()
 	private tsTranspiler = new TsTranspiler({ inlineSourceMap: true })
-	private options: Options;
+	private options: Options
 	private watchedFiles = new Map()
 	constructor(path = '.', options = {}) {
 		this.path = path
@@ -32,15 +31,18 @@ export default class MiddleWare {
 	): Promise<void> {
 		switch (Path.extname(request.path)) {
 			case '.js': {
-				const resolvedFilePath = await this.tsTranspiler.resolveFilePath(
-					Path.resolve(this.path + request.path),
-				)
+				let resolvedFilePath = null
+				try {
+					resolvedFilePath = await this.tsTranspiler.resolveFilePath(
+						Path.resolve(this.path + request.path),
+					)
+				} catch (error) {
+					response.sendStatus(404)
+					return
+				}
 				const info = await Fs.promises.stat(resolvedFilePath)
-				const code = await this.getFileContent(
-					resolvedFilePath,
-					info.mtimeMs,
-				) 
-				if(this.options.watch) {
+				const code = await this.getFileContent(resolvedFilePath, info.mtimeMs)
+				if (this.options.watch) {
 					this.handleWatch(resolvedFilePath)
 				}
 				response.set(this.getHttpHeaders(info.mtimeMs))
@@ -79,16 +81,20 @@ export default class MiddleWare {
 		return result.outputText
 	}
 	private handleWatch(filePath: string) {
-		if(!filePath.includes(CACHE_DIRECTORY)) {
-			if(!this.watchedFiles.has(filePath)) {
-				const watcher = Fs.watch(filePath, {
-					persistent: false,
-				}, this.onFileChanged.bind(this))
+		if (!filePath.includes(CACHE_DIRECTORY)) {
+			if (!this.watchedFiles.has(filePath)) {
+				const watcher = Fs.watch(
+					filePath,
+					{
+						persistent: false,
+					},
+					this.onFileChanged.bind(this),
+				)
 				this.watchedFiles.set(filePath, watcher)
 			}
 		}
 	}
 	private onFileChanged(eventType: string, filePath: string) {
-		console.log('File changed:', eventType, filePath);
+		console.log('File changed:', eventType, filePath)
 	}
 }
