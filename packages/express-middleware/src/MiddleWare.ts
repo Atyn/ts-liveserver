@@ -2,8 +2,10 @@ import Express from 'express'
 import Path from 'path'
 import Fs from 'fs'
 import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
+import WatchScriptContent from './WatchScript'
 
 const CACHE_DIRECTORY = Path.sep + 'node_modules' + Path.sep
+const watchScriptContent = new WatchScriptContent()
 
 type Options = {
 	watch?: boolean
@@ -29,6 +31,11 @@ export default class MiddleWare {
 		response: Express.Response,
 		next: () => void,
 	): Promise<void> {
+		if (this.options.watch && request.path === watchScriptContent.getUrl()) {
+			response.set(this.getHttpHeaders(0))
+			response.send(watchScriptContent.getCode())
+			return
+		}
 		switch (Path.extname(request.path)) {
 			case '.js': {
 				let resolvedFilePath = null
@@ -42,11 +49,15 @@ export default class MiddleWare {
 				}
 				const info = await Fs.promises.stat(resolvedFilePath)
 				const code = await this.getFileContent(resolvedFilePath, info.mtimeMs)
-				if (this.options.watch) {
-					this.handleWatch(resolvedFilePath)
-				}
 				response.set(this.getHttpHeaders(info.mtimeMs))
-				response.send(code)
+				if (this.options.watch && !resolvedFilePath.includes(CACHE_DIRECTORY)) {
+					this.handleWatch(resolvedFilePath)
+					response.send(
+						code + '\n' + watchScriptContent.getImportCode(request.path),
+					)
+				} else {
+					response.send(code)
+				}
 				break
 			}
 			default:
@@ -81,17 +92,15 @@ export default class MiddleWare {
 		return result.outputText
 	}
 	private handleWatch(filePath: string) {
-		if (!filePath.includes(CACHE_DIRECTORY)) {
-			if (!this.watchedFiles.has(filePath)) {
-				const watcher = Fs.watch(
-					filePath,
-					{
-						persistent: false,
-					},
-					this.onFileChanged.bind(this),
-				)
-				this.watchedFiles.set(filePath, watcher)
-			}
+		if (!this.watchedFiles.has(filePath)) {
+			const watcher = Fs.watch(
+				filePath,
+				{
+					persistent: false,
+				},
+				this.onFileChanged.bind(this),
+			)
+			this.watchedFiles.set(filePath, watcher)
 		}
 	}
 	private onFileChanged(eventType: string, filePath: string) {
