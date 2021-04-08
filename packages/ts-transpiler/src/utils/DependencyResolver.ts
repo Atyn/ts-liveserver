@@ -9,36 +9,42 @@ export default class DependencyResolver {
 		extensions: RESOLVE_EXTENSIONS,
 		aliasFields: ['browser'],
 	})
-	private fileName: string
-	constructor(fileName: string) {
-		this.fileName = fileName
-	}
-	public resolveRelativeDependency(dependencyFileName: string): string {
-		return this.resolveDependencyName(this.fileName, dependencyFileName)
+	private alias?: Record<string, string>
+	constructor(alias: Record<string, string> = {}) {
+		this.alias = alias
 	}
 	// Return e.g. ./hello/module.js
-	private resolveDependencyName(
-		parentPath: string,
+	public resolveDependencyName(
+		parentFilePath: string,
 		dependencyName: string,
 	): string {
-		const absolutePath = this.resolveDependencyPath(parentPath, dependencyName)
+		const absolutePath = this.resolveDependencyPath(
+			parentFilePath,
+			dependencyName,
+		)
 		const pathObj = Path.parse(absolutePath)
 		const relativeDir =
-			Path.relative(Path.dirname(parentPath), pathObj.dir) || '.'
+			Path.relative(Path.dirname(parentFilePath), pathObj.dir) || '.'
 		const result = relativeDir + '/' + pathObj.name + '.js'
 		const posixResult = Path.posix.normalize(result).replace(/\\/g, '/')
 		return posixResult.startsWith('.') ? posixResult : './' + posixResult
 	}
 	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
-	private resolveDependencyPath(
-		parentPath: string,
+	public resolveDependencyPath(
+		parentFilePath: string,
 		dependencyName: string,
 	): string {
-		const directory = Path.dirname(parentPath)
+		if (this.alias && dependencyName in this.alias) {
+			return this.resolveDependencyPath(
+				parentFilePath,
+				this.alias[dependencyName],
+			)
+		}
+		const directory = Path.dirname(parentFilePath)
 		const result = this.resolver({}, directory, dependencyName)
 		if (result === false) {
 			throw new Error(
-				'Could not resolve ' + dependencyName + ' from ' + parentPath,
+				'Could not resolve ' + dependencyName + ' from ' + parentFilePath,
 			)
 		}
 		return result

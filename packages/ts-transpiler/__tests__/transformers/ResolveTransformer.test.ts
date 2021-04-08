@@ -1,13 +1,7 @@
 import ResolveTransformer from '../../src/transformers/ResolveTransformer'
-import DependencyResolver from '../../src/utils/DependencyResolver'
 import TypeScript from 'typescript'
 
 describe('ResolveTransformer', () => {
-	beforeEach(() => {
-		jest
-			.spyOn(DependencyResolver.prototype, 'resolveRelativeDependency')
-			.mockImplementation(() => 'B')
-	})
 	describe('transformSourceFile', () => {
 		it('Should convert static import', async () => {
 			const input = 'import "./hello.ts";'
@@ -43,7 +37,12 @@ const compilerOptions: TypeScript.CompilerOptions = {
 }
 
 const transformers: TypeScript.CustomTransformers = {
-	after: [(context) => new ResolveTransformer(context)],
+	after: [
+		(context) =>
+			new ResolveTransformer(context, {
+				resolveDependencyName: () => 'B',
+			}),
+	],
 }
 
 async function transformWithPlugin(code: string): Promise<string> {

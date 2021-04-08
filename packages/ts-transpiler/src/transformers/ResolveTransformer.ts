@@ -1,11 +1,16 @@
 import TypeScript from 'typescript'
-import DependencyResolver from '../utils/DependencyResolver'
+
+interface Resolver {
+	resolveDependencyName(parentFilePath: string, dependencyName: string): string
+}
 
 export default class ResolveTransformer
 	implements TypeScript.CustomTransformer {
 	private context: TypeScript.TransformationContext
-	constructor(context: TypeScript.TransformationContext) {
+	private resolver: Resolver
+	constructor(context: TypeScript.TransformationContext, resolver: Resolver) {
 		this.context = context
+		this.resolver = resolver
 	}
 	public transformSourceFile(
 		sourceFile: TypeScript.SourceFile,
@@ -24,9 +29,10 @@ export default class ResolveTransformer
 				TypeScript.isImportDeclaration(node) &&
 				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
-				const resolvedName = new DependencyResolver(
+				const resolvedName = this.getDependencyName(
 					sourceFile.fileName,
-				).resolveRelativeDependency(node.moduleSpecifier.text)
+					node.moduleSpecifier.text,
+				)
 				return TypeScript.factory.updateImportDeclaration(
 					node,
 					node.decorators,
@@ -40,9 +46,10 @@ export default class ResolveTransformer
 				node.moduleSpecifier &&
 				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
-				const resolvedName = new DependencyResolver(
+				const resolvedName = this.getDependencyName(
 					sourceFile.fileName,
-				).resolveRelativeDependency(node.moduleSpecifier.text)
+					node.moduleSpecifier.text,
+				)
 				return TypeScript.factory.updateExportDeclaration(
 					node,
 					undefined,
@@ -68,40 +75,17 @@ export default class ResolveTransformer
 				node === node.parent.arguments[0]
 			) {
 				return TypeScript.factory.createStringLiteral(
-					new DependencyResolver(sourceFile.fileName).resolveRelativeDependency(
-						node.text,
-					),
+					this.getDependencyName(sourceFile.fileName, node.text),
 				)
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		return TypeScript.visitEachChild(sourceFile, visit, this.context)
 	}
-	private visit(node: TypeScript.Node) {
-		if (
-			(TypeScript.isImportDeclaration(node) ||
-				TypeScript.isExportDeclaration(node)) &&
-			node.moduleSpecifier
-		) {
-			return TypeScript.visitEachChild(
-				node,
-				this.visit.bind(this),
-				this.context,
-			)
-		}
-		if (
-			TypeScript.isStringLiteral(node) &&
-			node.parent &&
-			(TypeScript.isExportDeclaration(node.parent) ||
-				TypeScript.isImportDeclaration(node.parent)) &&
-			node.parent.moduleSpecifier
-		) {
-			return TypeScript.factory.createStringLiteral(
-				new DependencyResolver(
-					node.getSourceFile().fileName,
-				).resolveRelativeDependency(node.text),
-			)
-		}
-		return node
+	private getDependencyName(
+		parentFilePath: string,
+		dependencyName: string,
+	): string {
+		return this.resolver.resolveDependencyName(parentFilePath, dependencyName)
 	}
 }

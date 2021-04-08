@@ -1,7 +1,7 @@
 import Express from 'express'
 import Path from 'path'
 import Fs from 'fs'
-import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
+import { TsTranspiler, DefaultResolveAlias } from '@ts-liveserver/ts-transpiler'
 import WatchScriptContent from './WatchScript'
 
 const CACHE_DIRECTORY = Path.sep + 'node_modules' + Path.sep
@@ -19,7 +19,12 @@ export default class MiddleWare {
 	private cache: Record<string, CacheObject> = {}
 	private path: string
 	private startTime = new Date().getTime()
-	private tsTranspiler = new TsTranspiler({ inlineSourceMap: true })
+	private tsTranspiler = new TsTranspiler({
+		compilerOptions: {
+			inlineSourceMap: true,
+		},
+		resolveAlias: DefaultResolveAlias,
+	})
 	private options: Options
 	private watchedFiles = new Map()
 	constructor(path = '.', options = {}) {
