@@ -3,3 +3,5 @@ export { default as CommonJsTransformer } from './transformers/CommonJsTransform
 export { default as NodeEnvTransformer } from './transformers/NodeEnvTransformer'
 export { default as ResolveTransformer } from './transformers/ResolveTransformer'
 export { default as CodeOptimizerTransformer } from './transformers/CodeOptimizerTransformer'
+export { default as DefaultResolveAlias } from './DefaultResolveAlias'
+export { default as DependencyResolver } from './utils/DependencyResolver'

@@ -7,7 +7,9 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import Component from './Component'
 import Data from './DataFile.json'
+import Stream from 'stream'
 
+console.log('Stream:', Stream)
 console.log('Data:', Data)
 
 getSomething().then((result) => {

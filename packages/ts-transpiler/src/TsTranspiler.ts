@@ -2,14 +2,35 @@ import Fs from 'fs'
 import Path from 'path'
 import TypeScript from 'typescript'
 import CompilerOptions from './CompilerOptions'
-import AllTransformers from './AllTransformers'
+import ResolveTransformer from './transformers/ResolveTransformer'
+import CommonJsTransformer from './transformers/CommonJsTransformer'
+import NodeEnvTransformer from './transformers/NodeEnvTransformer'
+import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
+import EnsureExportDefaultTransformer from './transformers/EnsureExportDefaultTransformer'
+import InternalDependencyReducer from './transformers/InternalDependencyReducer'
+import DependencyResolver from './utils/DependencyResolver'
 
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json']
-
+type Options = {
+	compilerOptions?: TypeScript.CompilerOptions
+	resolveAlias?: Record<string, string>
+}
 export default class TsTranspiler {
 	private compilerOptions: TypeScript.CompilerOptions = CompilerOptions
-	constructor(compilerOptions?: TypeScript.CompilerOptions) {
-		Object.assign(this.compilerOptions, compilerOptions)
+	private transformers: TypeScript.CustomTransformers
+	constructor(options?: Options) {
+		const dependencyResolver = new DependencyResolver(options?.resolveAlias)
+		Object.assign(this.compilerOptions, options?.compilerOptions)
+		this.transformers = {
+			before: [
+				(context) => new NodeEnvTransformer(context),
+				(context) => new InternalDependencyReducer(context),
+				(context) => new CodeOptimizerTransformer(context),
+				(context) => new CommonJsTransformer(context),
+				(context) => new ResolveTransformer(context, dependencyResolver),
+			],
+			after: [(context) => new EnsureExportDefaultTransformer(context)],
+		}
 	}
 	async transformCode(
 		code: string,
@@ -19,7 +40,7 @@ export default class TsTranspiler {
 			compilerOptions: this.compilerOptions,
 			fileName: fileName,
 			reportDiagnostics: true,
-			transformers: AllTransformers,
+			transformers: this.transformers,
 		})
 		if (results.diagnostics?.length) {
 			// eslint-disable-next-line no-console

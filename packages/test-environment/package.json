@@ -4,7 +4,7 @@
 	"license": "ISC",
 	"version": "0.0.0",
 	"scripts": {
-		"test-environment:serve": "ts-liveserver ../../",
+		"test-environment:serve": "ts-liveserver ../../ --watch",
 		"test-environment:deploy": "deploy --directory='./tmp/a/b/deploy' './src/App.js'"
 	},
 	"devDependencies": {
