@@ -29,7 +29,7 @@ export default class DependencyResolver {
 		const posixResult = Path.posix.normalize(result).replace(/\\/g, '/')
 		return posixResult.startsWith('.') ? posixResult : './' + posixResult
 	}
-	// Return an aboslute path e.g. /tmp/a-apath/node_modules/hello/module.js
+	// Return an absolute path e.g. /tmp/a-apath/node_modules/hello/module.js
 	public resolveDependencyPath(
 		parentFilePath: string,
 		dependencyName: string,
@@ -40,11 +40,14 @@ export default class DependencyResolver {
 				this.alias[dependencyName],
 			)
 		}
-		const directory = Path.dirname(parentFilePath)
-		const result = this.resolver({}, directory, dependencyName)
+		const result = this.resolver(
+			{},
+			Path.dirname(parentFilePath),
+			dependencyName,
+		)
 		if (result === false) {
 			throw new Error(
-				'Could not resolve ' + dependencyName + ' from ' + parentFilePath,
+				`Could not resolve "${dependencyName}" from ${parentFilePath}`,
 			)
 		}
 		return result

@@ -1,3 +1,3 @@
 export default {
-	stream: 'stream-browserify',
+	zlib: 'browserify-zlib',
 }

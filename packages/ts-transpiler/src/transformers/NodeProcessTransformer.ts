@@ -1,9 +1,13 @@
 import TypeScript from 'typescript'
 
+const PROCESS: Record<string, string> = {
+	arch: 'x64',
+}
+
 /*
 Replaces process.env.NODE_ENV in code
 */
-export default class NodeEnvTransformer
+export default class NodeProcessTransformer
 	implements TypeScript.CustomTransformer {
 	private context: TypeScript.TransformationContext
 	constructor(context: TypeScript.TransformationContext) {
@@ -12,18 +16,13 @@ export default class NodeEnvTransformer
 	private visit(node: TypeScript.Node) {
 		if (
 			TypeScript.isPropertyAccessExpression(node) &&
-			TypeScript.isPropertyAccessExpression(node.expression) &&
 			TypeScript.isIdentifier(node.name) &&
-			TypeScript.isIdentifier(node.expression.expression) &&
-			TypeScript.isIdentifier(node.expression.name) &&
-			node.name.getText() === 'NODE_ENV' &&
-			node.expression.name.getText() === 'env' &&
-			node.expression.expression.getText() === 'process'
+			TypeScript.isIdentifier(node.expression) &&
+			node.expression.getText() === 'process'
 		) {
-			if (process.env.NODE_ENV) {
-				return TypeScript.factory.createStringLiteral(process.env.NODE_ENV)
-			} else {
-				return TypeScript.factory.createStringLiteral('production')
+			const key = node.name.getText()
+			if (key in PROCESS) {
+				return TypeScript.factory.createStringLiteral(PROCESS[key])
 			}
 		}
 		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)
@@ -31,7 +30,7 @@ export default class NodeEnvTransformer
 	transformSourceFile(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
-		if (!/NODE_ENV/gm.test(sourceFile.text)) {
+		if (!/process\./gm.test(sourceFile.text)) {
 			return sourceFile
 		}
 		return TypeScript.visitNode(sourceFile, this.visit.bind(this))

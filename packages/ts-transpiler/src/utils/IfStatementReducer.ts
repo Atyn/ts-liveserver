@@ -21,16 +21,16 @@ export default class IfStatementReducer {
 				)
 			}
 			// Only else
-			if (
-				node.expression.kind === TypeScript.SyntaxKind.FalseKeyword &&
-				node.elseStatement &&
-				TypeScript.isBlock(node.elseStatement)
-			) {
-				// return node.elseStatement.statements
-				return TypeScript.visitNodes(
-					node.elseStatement.statements,
-					this.visit.bind(this),
-				)
+			if (node.expression.kind === TypeScript.SyntaxKind.FalseKeyword) {
+				if (node.elseStatement && TypeScript.isBlock(node.elseStatement)) {
+					// return node.elseStatement.statements
+					return TypeScript.visitNodes(
+						node.elseStatement.statements,
+						this.visit.bind(this),
+					)
+				} else {
+					return undefined
+				}
 			}
 		}
 		return TypeScript.visitEachChild(node, this.visit.bind(this), this.context)

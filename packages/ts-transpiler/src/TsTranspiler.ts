@@ -5,6 +5,7 @@ import CompilerOptions from './CompilerOptions'
 import ResolveTransformer from './transformers/ResolveTransformer'
 import CommonJsTransformer from './transformers/CommonJsTransformer'
 import NodeEnvTransformer from './transformers/NodeEnvTransformer'
+import NodeProcessTransformer from './transformers/NodeProcessTransformer'
 import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
 import EnsureExportDefaultTransformer from './transformers/EnsureExportDefaultTransformer'
 import InternalDependencyReducer from './transformers/InternalDependencyReducer'
@@ -24,6 +25,7 @@ export default class TsTranspiler {
 		this.transformers = {
 			before: [
 				(context) => new NodeEnvTransformer(context),
+				(context) => new NodeProcessTransformer(context),
 				(context) => new InternalDependencyReducer(context),
 				(context) => new CodeOptimizerTransformer(context),
 				(context) => new CommonJsTransformer(context),
