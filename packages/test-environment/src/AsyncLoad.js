@@ -10,6 +10,7 @@ export async function getSomething() {
 	console.log('remarkParse:', remarkParse)
 	const mod = await import('qr-image')
 	const QrImage = mod.default
+	// eslint-disable-next-line no-console
 	console.log('QrImage:', QrImage)
 	const { size, path } = QrImage.svgObject('www.ikea.com', { type: 'svg' })
 	const div = document.createElement('div')
