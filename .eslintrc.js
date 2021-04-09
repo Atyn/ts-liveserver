@@ -49,5 +49,6 @@ module.exports = {
 		'import/no-extraneous-dependencies': warn,
 		'no-useless-rename': warn,
 		'filenames/match-exported': warn,
+		'@typescript-eslint/interface-name-prefix': off,
 	},
 }

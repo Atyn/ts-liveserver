@@ -1,9 +1,10 @@
 import Path from 'path'
 import Resolve from 'enhanced-resolve'
+import IEsmDependencyResolver from '../types/IEsmDependencyResolver'
 
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
 
-export default class DependencyResolver {
+export default class DependencyResolver implements IEsmDependencyResolver {
 	private resolver = Resolve.create.sync({
 		mainFields: ['browser', 'module', 'main'],
 		extensions: RESOLVE_EXTENSIONS,
