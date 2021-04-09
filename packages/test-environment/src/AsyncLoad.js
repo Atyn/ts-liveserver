@@ -11,6 +11,13 @@ export async function getSomething() {
 	const mod = await import('qr-image')
 	const QrImage = mod.default
 	console.log('QrImage:', QrImage)
-	// const { size, path } = QrImage.svgObject(this.url, { type: 'svg' });
+	const { size, path } = QrImage.svgObject('www.ikea.com', { type: 'svg' })
+	const div = document.createElement('div')
+	div.innerHTML = `
+			<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+				<path d="${path}" />
+			</svg>
+	`
+	document.body.appendChild(div)
 	return content.default
 }
