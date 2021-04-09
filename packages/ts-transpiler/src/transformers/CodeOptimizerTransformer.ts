@@ -8,16 +8,12 @@ Replaces process.env.NODE_ENV in code
 export default class CodeOptimizerTransformer
 	implements TypeScript.CustomTransformer {
 	private context: TypeScript.TransformationContext
-	private moduleResolutionHost: TypeScript.ModuleResolutionHost
 	private binaryExpressionsReducer: BinaryExpressionsReducer
 	private ifStatementReducer: IfStatementReducer
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context
 		this.binaryExpressionsReducer = new BinaryExpressionsReducer(context)
 		this.ifStatementReducer = new IfStatementReducer(context)
-		this.moduleResolutionHost = TypeScript.createCompilerHost(
-			this.context.getCompilerOptions(),
-		)
 	}
 	public transformSourceFile(
 		node: TypeScript.SourceFile,
