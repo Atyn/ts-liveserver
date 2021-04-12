@@ -8,7 +8,7 @@ import NodeEnvTransformer from './transformers/NodeEnvTransformer'
 import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
 import EnsureExportDefaultTransformer from './transformers/EnsureExportDefaultTransformer'
 import InternalDependencyReducer from './transformers/InternalDependencyReducer'
-import DependencyResolver from './utils/DependencyResolver'
+import DependencyResolver from './DependencyResolver'
 
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json']
 type Options = {

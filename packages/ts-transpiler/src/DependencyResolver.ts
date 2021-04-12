@@ -1,6 +1,6 @@
 import Path from 'path'
 import Resolve from 'enhanced-resolve'
-import IEsmDependencyResolver from '../types/IEsmDependencyResolver'
+import IEsmDependencyResolver from './types/IEsmDependencyResolver'
 
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
 
