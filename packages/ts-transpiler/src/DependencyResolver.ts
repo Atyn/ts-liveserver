@@ -19,7 +19,10 @@ export default class DependencyResolver implements IEsmDependencyResolver {
 		parentFilePath: string,
 		dependencyName: string,
 	): string {
-		if(dependencyName.startsWith('https://') || dependencyName.startsWith('http://')) {
+		if (
+			dependencyName.startsWith('https://') ||
+			dependencyName.startsWith('http://')
+		) {
 			return dependencyName
 		}
 		const absolutePath = this.resolveDependencyPath(
