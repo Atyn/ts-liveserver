@@ -1,0 +1,33 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`CodeOptimizerTransformer Should be "true" 1`] = `"false;"`;
+
+exports[`CodeOptimizerTransformer Should combine optimizations 1`] = `"false;"`;
+
+exports[`CodeOptimizerTransformer Should empty functions in root scope 1`] = `"console.log(\\"yoyo\\");"`;
+
+exports[`CodeOptimizerTransformer Should handle empty string 1`] = `
+"if (\\"\\") {
+    console.log(\\"hello\\");
+}"
+`;
+
+exports[`CodeOptimizerTransformer Should handle false 1`] = `
+"if (\\"\\") {
+    console.log(\\"hello\\");
+}"
+`;
+
+exports[`CodeOptimizerTransformer Should handle nested binary expressions 1`] = `"(true) === true;"`;
+
+exports[`CodeOptimizerTransformer Should handle null 1`] = `
+"if (null) {
+    console.log(\\"hello\\");
+}"
+`;
+
+exports[`CodeOptimizerTransformer Should handle true 1`] = `"console.log(\\"hello\\");"`;
+
+exports[`CodeOptimizerTransformer Should remove if it is the same 1`] = `"console.log(\\"hello\\");"`;
+
+exports[`CodeOptimizerTransformer Should remove if statement if it is never the same 1`] = `"console.log(\\"always happens\\");"`;

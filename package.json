@@ -9,6 +9,7 @@
 		"version": "lerna version --no-private --no-push",
 		"publish": "lerna publish from-package --no-private --no-push",
 		"test": "lerna run test --stream",
+		"test:update-snapshot": "lerna run test:updateSnapshot --stream",
 		"deploy": "npm run build && lerna run --stream test-environment:deploy",
 		"_deploy": "npm run build && node ./packages/deploy/dist/cli.js --directory='./tmp/deploy' 'packages/test-environment/src/App.ts'",
 		"start": "npm run build && npm run test-environment:serve",
