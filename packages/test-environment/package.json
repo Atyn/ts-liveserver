@@ -5,11 +5,11 @@
 	"version": "0.0.0",
 	"scripts": {
 		"test-environment:serve": "ts-liveserver ../../ --watch",
-		"test-environment:deploy": "deploy --directory='./tmp/a/b/deploy' './src/App.js'"
+		"test-environment:deploy": "ts-liveserver-build --directory='./tmp/a/b/deploy' './src/App.js'"
 	},
 	"devDependencies": {
 		"@ts-liveserver/server": "^0.0.0",
-		"@ts-liveserver/deploy": "^0.0.0",
+		"@ts-liveserver/build": "^0.0.0",
 		"@types/react": "^16.9.36",
 		"@types/react-dom": "^17.0.0",
 		"remark-parse": "^8.0.2",

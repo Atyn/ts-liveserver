@@ -1,12 +1,14 @@
 #!/usr/bin/env node
 
 import Deployer from './Deployer'
-import { TsTranspiler } from '@ts-liveserver/ts-transpiler'
+import { TsTranspiler, DefaultResolveAlias } from '@ts-liveserver/ts-transpiler'
 
 const inputFiles = getInputFiles()
 const outputDirectory = getOutputDirectory()
 
-const transpiler = new TsTranspiler()
+const transpiler = new TsTranspiler({
+	resolveAlias: DefaultResolveAlias,
+})
 const deployer = new Deployer(outputDirectory, async (fileName) => {
 	const resolvedFileName = await transpiler.resolveFilePath(fileName)
 	const result = await transpiler.transformFile(resolvedFileName)

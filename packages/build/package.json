@@ -1,11 +1,13 @@
 {
-	"name": "@ts-liveserver/deploy",
+	"name": "@ts-liveserver/build",
 	"version": "0.0.0",
 	"license": "ISC",
-	"private": true,
+	"publishConfig": {
+		"access": "public"
+	},
 	"main": "dist/index.js",
 	"bin": {
-		"deploy": "dist/cli.js"
+		"ts-liveserver-build": "dist/cli.js"
 	},
 	"scripts": {
 		"build": "tsc --build",
