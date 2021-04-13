@@ -4,11 +4,13 @@ import TypeScript from 'typescript'
 process.env.NODE_ENV = 'development'
 describe('CodeOptimizerTransformer', () => {
 	it('Should handle null', async () => {
-		const input = 'if(null) { console.log("hello"); }'
+		const input =
+			'if(null) { console.log("do not show"); } else { console.log("show");}'
 		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should handle empty string', async () => {
-		const input = 'if("") { console.log("hello"); }'
+		const input =
+			'if("") { console.log("do not show"); } else { console.log("show");}'
 		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should handle true', async () => {
@@ -16,7 +18,8 @@ describe('CodeOptimizerTransformer', () => {
 		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should handle false', async () => {
-		const input = 'if("") { console.log("hello"); }'
+		const input =
+			'if(false) { console.log("do not show"); } else { console.log("show");}'
 		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should remove "use strict"', async () => {
