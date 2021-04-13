@@ -1,6 +1,6 @@
 import TypeScript from 'typescript'
-import BinaryExpressionsReducer from '../utils/BinaryExpressionsReducer'
-import IfStatementReducer from '../utils/IfStatementReducer'
+import BinaryExpressionsReducer from './utils/BinaryExpressionsReducer'
+import IfStatementReducer from './utils/IfStatementReducer'
 
 /*
 Replaces process.env.NODE_ENV in code

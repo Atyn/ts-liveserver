@@ -1,14 +1,14 @@
 import TypeScript from 'typescript'
-
-interface Resolver {
-	resolveDependencyName(parentFilePath: string, dependencyName: string): string
-}
+import IEsmDependencyResolver from '../types/IEsmDependencyResolver'
 
 export default class ResolveTransformer
 	implements TypeScript.CustomTransformer {
 	private context: TypeScript.TransformationContext
-	private resolver: Resolver
-	constructor(context: TypeScript.TransformationContext, resolver: Resolver) {
+	private resolver: IEsmDependencyResolver
+	constructor(
+		context: TypeScript.TransformationContext,
+		resolver: IEsmDependencyResolver,
+	) {
 		this.context = context
 		this.resolver = resolver
 	}

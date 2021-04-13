@@ -1,50 +1,51 @@
 import CodeOptimizerTransformer from '../../src/transformers/CodeOptimizerTransformer'
 import TypeScript from 'typescript'
 
+process.env.NODE_ENV = 'development'
 describe('CodeOptimizerTransformer', () => {
-	it('Create booleans of statements', async () => {
-		process.env.NODE_ENV = 'development'
+	it('Should handle null', async () => {
+		const input = 'if(null) { console.log("hello"); }'
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
+	it('Should handle empty string', async () => {
+		const input = 'if("") { console.log("hello"); }'
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
+	it('Should handle true', async () => {
+		const input = 'if(true) { console.log("hello"); }'
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
+	it('Should handle false', async () => {
+		const input = 'if("") { console.log("hello"); }'
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
+	it('Should be "true"', async () => {
 		const input = '"a" === "b"'
-		const output = 'false'
-		expect(await transformWithPlugin(input)).toBe(
-			await transformWithoutPlugin(output),
-		)
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should remove if it is the same', async () => {
-		process.env.NODE_ENV = 'development'
 		const input =
 			'if ("astring" === "astring") { console.log("hello"); } else { console.log("never happens")}'
-		const output = 'console.log("hello")'
-		expect(await transformWithPlugin(input)).toBe(
-			await transformWithoutPlugin(output),
-		)
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should remove if statement if it is never the same', async () => {
-		process.env.NODE_ENV = 'development'
 		const input =
 			'if ("something else" === "astring") { console.log("hello"); } else { console.log("always happens")}'
-		const output = 'console.log("always happens")'
-		expect(await transformWithPlugin(input)).toBe(
-			await transformWithoutPlugin(output),
-		)
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should empty functions in root scope', async () => {
-		process.env.NODE_ENV = 'development'
 		const input = '(function () { console.log("yoyo") })();'
-		const output = 'console.log("yoyo")'
-		expect(await transformWithPlugin(input)).toBe(
-			await transformWithoutPlugin(output),
-		)
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
+	it('Should handle nested binary expressions', async () => {
+		const input = '("a" === "a") === true'
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 	it('Should combine optimizations', async () => {
-		process.env.NODE_ENV = 'development'
 		const input = `(function () {
 			"a" === "b";
 		})();`
-		const output = 'false'
-		expect(await transformWithPlugin(input)).toBe(
-			await transformWithoutPlugin(output),
-		)
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
 })
 
