@@ -11,7 +11,7 @@
 	"include": ["src", "src/**/*.json", "src/*.json"],
 	"references": [
 		{
-			"path": "../deploy"
+			"path": "../build"
 		},
 		{
 			"path": "../server"

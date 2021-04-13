@@ -101,7 +101,7 @@ export default class CodeOptimizerTransformer
 			if (TypeScript.isIfStatement(node)) {
 				// Only if
 				if (
-					node.expression.kind === TypeScript.SyntaxKind.TrueKeyword &&
+					this.isExpressionTruthy(node.expression) &&
 					TypeScript.isBlock(node.thenStatement)
 				) {
 					return [
@@ -109,7 +109,7 @@ export default class CodeOptimizerTransformer
 					]
 				}
 				// Only else
-				if (node.expression.kind === TypeScript.SyntaxKind.FalseKeyword) {
+				if (this.isExpressionFalsy(node.expression)) {
 					if (node.elseStatement && TypeScript.isBlock(node.elseStatement)) {
 						// return node.elseStatement.statements
 						return [
@@ -123,6 +123,27 @@ export default class CodeOptimizerTransformer
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		return TypeScript.visitEachChild(sourceFile, visit, this.context)
+	}
+	private isExpressionFalsy(node: TypeScript.Node): boolean {
+		if (node.kind === TypeScript.SyntaxKind.FalseKeyword) {
+			return true
+		}
+		if (node.kind === TypeScript.SyntaxKind.NullKeyword) {
+			return true
+		}
+		if (TypeScript.isStringLiteral(node) && node.text === '') {
+			return true
+		}
+		return false
+	}
+	private isExpressionTruthy(node: TypeScript.Node): boolean {
+		if (node.kind === TypeScript.SyntaxKind.TrueKeyword) {
+			return true
+		}
+		if (TypeScript.isStringLiteral(node) && node.text !== '') {
+			return true
+		}
+		return false
 	}
 	private isExpressionStaticallyTruthy(node: TypeScript.Expression): boolean {
 		// The same
