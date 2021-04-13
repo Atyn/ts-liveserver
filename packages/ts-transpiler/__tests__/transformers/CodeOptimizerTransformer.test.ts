@@ -19,6 +19,10 @@ describe('CodeOptimizerTransformer', () => {
 		const input = 'if("") { console.log("hello"); }'
 		expect(await transformWithPlugin(input)).toMatchSnapshot()
 	})
+	it('Should remove "use strict"', async () => {
+		const input = '"use strict"; console.log("hello")'
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
 	it('Should be "true"', async () => {
 		const input = '"a" === "b"'
 		expect(await transformWithPlugin(input)).toMatchSnapshot()
