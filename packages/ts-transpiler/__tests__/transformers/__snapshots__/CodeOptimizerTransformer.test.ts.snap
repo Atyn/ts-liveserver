@@ -28,6 +28,8 @@ exports[`CodeOptimizerTransformer Should handle null 1`] = `
 
 exports[`CodeOptimizerTransformer Should handle true 1`] = `"console.log(\\"hello\\");"`;
 
+exports[`CodeOptimizerTransformer Should remove "use strict" 1`] = `"console.log(\\"hello\\");"`;
+
 exports[`CodeOptimizerTransformer Should remove if it is the same 1`] = `"console.log(\\"hello\\");"`;
 
 exports[`CodeOptimizerTransformer Should remove if statement if it is never the same 1`] = `"console.log(\\"always happens\\");"`;

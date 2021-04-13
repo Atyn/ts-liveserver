@@ -8,6 +8,7 @@ const CompilerOptions: TypeScript.CompilerOptions = {
 	resolveJsonModule: false,
 	esModuleInterop: true,
 	skipLibCheck: true,
+	experimentalDecorators: true,
 	target: TypeScript.ScriptTarget.ES2020,
 	declaration: false,
 	module: TypeScript.ModuleKind.ES2020,
