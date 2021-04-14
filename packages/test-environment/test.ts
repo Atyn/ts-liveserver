@@ -1,3 +1,5 @@
+/* eslint-disable */
+
 import CommonJsTransformer from './transformers/CommonJsTransformer'
 import ResolveTransformer from './transformers/ResolveTransformer'
 import CompilerOptions from './CompilerOptions'

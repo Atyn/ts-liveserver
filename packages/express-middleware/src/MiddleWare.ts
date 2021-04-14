@@ -109,6 +109,7 @@ export default class MiddleWare {
 		}
 	}
 	private onFileChanged(eventType: string, filePath: string) {
+		// eslint-disable-next-line no-console
 		console.log('File changed:', eventType, filePath)
 	}
 }
