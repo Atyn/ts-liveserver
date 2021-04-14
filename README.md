@@ -1,5 +1,19 @@
 A superfast HTTP-server that compiles just-in-time to ES6 modules that browser can execute. Starts to serve your TypeScript project within a second!
 
+## Documentation of packages
+
+### Serve with ES6 modules
+
+[@ts-liveserver/server](./packages/server/README.md)
+
+### Build to ES6 modules
+
+[@ts-liveserver/build](./packages/build/README.md)
+
+### Transpiler
+
+[@ts-liveserver/ts-transpiler](./packages/build/README.md)
+
 ## Features
 
 - TypeScript
