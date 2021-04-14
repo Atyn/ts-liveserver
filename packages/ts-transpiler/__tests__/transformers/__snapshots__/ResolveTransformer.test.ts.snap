@@ -6,7 +6,7 @@ exports[`ResolveTransformer transformSourceFile Should convert async import 1`] 
 }"
 `;
 
-exports[`ResolveTransformer transformSourceFile Should convert forward 1`] = `"export * from \\"B\\";"`;
+exports[`ResolveTransformer transformSourceFile Should convert forward 1`] = `"export { default as something } from \\"B\\";"`;
 
 exports[`ResolveTransformer transformSourceFile Should convert named imports 1`] = `
 "import { hello } from \\"B\\";

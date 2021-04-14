@@ -1,20 +1,27 @@
 {
-	"extends": "../../tsconfig.json",
-	"compilerOptions": {
-		"outDir": "./dist",
-		"rootDir": "./src",
-		"jsx": "react",
-		"tsBuildInfoFile": "tmp/tsbuildinfo",
-		"noImplicitAny": false,
-		"baseUrl": "."
-	},
-	"include": ["src", "src/**/*.json", "src/*.json"],
-	"references": [
-		{
-			"path": "../build"
-		},
-		{
-			"path": "../server"
-		}
-	]
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "jsx": "react",
+    "tsBuildInfoFile": "tmp/tsbuildinfo",
+    "noImplicitAny": false,
+    "baseUrl": "."
+  },
+  "include": [
+    "src",
+    "src/**/*.json",
+    "src/*.json"
+  ],
+  "references": [
+    {
+      "path": "../build"
+    },
+    {
+      "path": "../server"
+    },
+    {
+      "path": "../ts-transpiler"
+    }
+  ]
 }

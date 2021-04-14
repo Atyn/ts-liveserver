@@ -10,7 +10,8 @@ import EnsureExportDefaultTransformer from './transformers/EnsureExportDefaultTr
 import InternalDependencyReducer from './transformers/InternalDependencyReducer'
 import DependencyResolver from './DependencyResolver'
 
-const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json']
+const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
+
 type Options = {
 	compilerOptions?: TypeScript.CompilerOptions
 	resolveAlias?: Record<string, string>

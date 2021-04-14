@@ -52,10 +52,10 @@ export default class ResolveTransformer
 				)
 				return TypeScript.factory.updateExportDeclaration(
 					node,
-					undefined,
-					undefined,
+					node.decorators,
+					node.modifiers,
 					node.isTypeOnly,
-					undefined,
+					node.exportClause,
 					TypeScript.factory.createStringLiteral(resolvedName),
 				)
 			}

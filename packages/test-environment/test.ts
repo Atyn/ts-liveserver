@@ -1,13 +1,13 @@
 /* eslint-disable */
 
-import CommonJsTransformer from './transformers/CommonJsTransformer'
-import ResolveTransformer from './transformers/ResolveTransformer'
-import CompilerOptions from './CompilerOptions'
+import CommonJsTransformer from '@ts-liveserver/ts-transpiler/dist/transformers/ResolveTransformer'
+// import ResolveTransformer from '@ts-liveserver/ts-transpiler/dist/transformers/ResolveTransformer'
+import CompilerOptions from '@ts-liveserver/ts-transpiler/dist/CompilerOptions'
 import TypeScript from 'typescript'
 import Fs from 'fs'
 
-// const filePath = '../../test.js'
-const filePath = '../../test.ts'
+const filePath = './Test.js'
+// const filePath = '../../test.ts'
 // const filePath = '../../XPathCSSGenerator.js'
 // const filePath = './packages/test-environment/src/Test.js'
 // const filePath = './packages/test-environment/src/ReactIndex.js'
@@ -16,7 +16,8 @@ const filePath = '../../test.ts'
 
 const transformers: TypeScript.CustomTransformers = {
 	before: [
-		(context) => new CommonJsTransformer(context),
+		(context) =>
+			new CommonJsTransformer(context, { resolveDependencyName: () => 'b' }),
 		// (context) => new ResolveTransformer(context),
 	],
 }

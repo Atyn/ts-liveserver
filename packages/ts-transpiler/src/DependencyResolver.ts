@@ -3,12 +3,12 @@ import Resolve from 'enhanced-resolve'
 import IEsmDependencyResolver from './types/IEsmDependencyResolver'
 
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
-
+const ALIAS_FIELDS = ['browser', 'module']
 export default class DependencyResolver implements IEsmDependencyResolver {
 	private resolver = Resolve.create.sync({
-		mainFields: ['browser', 'module', 'main'],
+		mainFields: [...ALIAS_FIELDS, 'main'],
 		extensions: RESOLVE_EXTENSIONS,
-		aliasFields: ['browser'],
+		aliasFields: ALIAS_FIELDS,
 	})
 	private alias?: Record<string, string>
 	constructor(alias: Record<string, string> = {}) {
