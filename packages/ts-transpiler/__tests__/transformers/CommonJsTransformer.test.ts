@@ -116,6 +116,12 @@ describe('CommonJsTransformer', () => {
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 	})
+	describe('Should not affect other code', () => {
+		it('Should convert named export', async () => {
+			const input = 'export var hello = "hello"; require("hello")'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
+	})
 	describe('Should read from internal export', () => {
 		it('Should convert to multiple commands', async () => {
 			const input =
