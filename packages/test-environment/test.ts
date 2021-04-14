@@ -1,6 +1,6 @@
 /* eslint-disable */
 
-import CommonJsTransformer from '@ts-liveserver/ts-transpiler/dist/transformers/ResolveTransformer'
+import CommonJsTransformer from '@ts-liveserver/ts-transpiler/dist/transformers/CommonJsTransformer'
 // import ResolveTransformer from '@ts-liveserver/ts-transpiler/dist/transformers/ResolveTransformer'
 import CompilerOptions from '@ts-liveserver/ts-transpiler/dist/CompilerOptions'
 import TypeScript from 'typescript'
@@ -16,8 +16,7 @@ const filePath = './Test.js'
 
 const transformers: TypeScript.CustomTransformers = {
 	before: [
-		(context) =>
-			new CommonJsTransformer(context, { resolveDependencyName: () => 'b' }),
+		(context) => new CommonJsTransformer(context),
 		// (context) => new ResolveTransformer(context),
 	],
 }

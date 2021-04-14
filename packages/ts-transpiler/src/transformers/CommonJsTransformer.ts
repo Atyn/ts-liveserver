@@ -230,7 +230,7 @@ export default class CommonJsTransformer
 						...importDeclarations,
 						TypeScript.factory.updateVariableStatement(
 							node,
-							undefined,
+							node.modifiers,
 							TypeScript.factory.updateVariableDeclarationList(
 								node.declarationList,
 								variableDeclarations,
