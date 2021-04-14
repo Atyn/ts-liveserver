@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ResolveTransformer transformSourceFile Should convert async import 1`] = `
+"{
+    import(\\"B\\");
+}"
+`;
+
+exports[`ResolveTransformer transformSourceFile Should convert forward 1`] = `"export * from \\"B\\";"`;
+
+exports[`ResolveTransformer transformSourceFile Should convert named imports 1`] = `
+"import { hello } from \\"B\\";
+console.log(hello);"
+`;
+
+exports[`ResolveTransformer transformSourceFile Should convert static import 1`] = `"import \\"B\\";"`;

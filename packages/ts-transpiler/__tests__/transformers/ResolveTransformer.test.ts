@@ -5,17 +5,19 @@ describe('ResolveTransformer', () => {
 	describe('transformSourceFile', () => {
 		it('Should convert static import', async () => {
 			const input = 'import "./hello.ts";'
-			const output = 'import "B";'
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 		it('Should convert async import', async () => {
-			const input = '{ import("./hello.ts"); }'
-			const output = '{ import("B"); }'
-			expect(await transformWithPlugin(input)).toBe(
-				await transformWithoutPlugin(output),
-			)
+			const input = '{ import("./hello.ts") }'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
+		it('Should convert forward', async () => {
+			const input = 'export { default as something } from "../a/b"'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+		})
+		it('Should convert named imports', async () => {
+			const input = 'import { hello } from "../a/b"; console.log(hello)'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
 		})
 	})
 })
