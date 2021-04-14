@@ -8,9 +8,11 @@ import ReactDOM from 'react-dom'
 import Component from './Component'
 import Data from './DataFile.json'
 
+// eslint-disable-next-line no-console
 console.log('Data:', Data)
 
 getSomething().then((result) => {
+	// eslint-disable-next-line no-console
 	console.log('result:', result)
 })
 

@@ -32,6 +32,8 @@ module.exports = {
 		'@typescript-eslint/no-use-before-define': off,
 		'@typescript-eslint/member-delimiter-style': off,
 		'@typescript-eslint/explicit-function-return-type': off,
+		'@typescript-eslint/interface-name-prefix': off,
+		'@typescript-eslint/explicit-module-boundary-types': off,
 		'no-unexpected-multiline': warn,
 		'prefer-const': warn,
 		'no-empty': warn,
@@ -49,6 +51,5 @@ module.exports = {
 		'import/no-extraneous-dependencies': warn,
 		'no-useless-rename': warn,
 		'filenames/match-exported': warn,
-		'@typescript-eslint/interface-name-prefix': off,
 	},
 }

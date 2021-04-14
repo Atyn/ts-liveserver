@@ -1,5 +1,6 @@
 import TypeScript from 'typescript'
 
+// eslint-disable-next-line no-shadow
 enum KEYNAME {
 	exports = 'exports',
 	module = 'module',

@@ -17,8 +17,8 @@
 		"lint:fix": "eslint --fix --max-warnings 0 --ignore-path .gitignore . && prettier --write --ignore-path .gitignore ."
 	},
 	"devDependencies": {
-		"@typescript-eslint/eslint-plugin": "^2.5.0",
-		"@typescript-eslint/parser": "^4.13.0",
+		"@typescript-eslint/eslint-plugin": "^4.22.0",
+		"@typescript-eslint/parser": "^4.22.0",
 		"concurrently": "4.1.0",
 		"eslint": "^7.18.0",
 		"eslint-config-prettier": "^6.15.0",
