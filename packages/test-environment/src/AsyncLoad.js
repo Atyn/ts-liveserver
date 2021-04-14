@@ -17,7 +17,7 @@ export async function getSomething() {
 	})
 	const div = document.createElement('div')
 	div.innerHTML = `
-			<svg viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
+			<svg style="max-width: 200px;" viewBox="0 0 ${size} ${size}" xmlns="http://www.w3.org/2000/svg">
 				<path d="${path}" />
 			</svg>
 	`
