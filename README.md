@@ -34,7 +34,7 @@ If one of your dependencies are using internal NodeJS-module, you need to add a 
 
 ```json
 {
-	"dependencies" {
+	"dependencies": {
 		"events": "^3.3.0",
 		"stream": "^0.0.2",
 		"buffer": "^6.0.3",
