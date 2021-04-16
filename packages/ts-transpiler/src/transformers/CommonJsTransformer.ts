@@ -363,10 +363,15 @@ export default class CommonJsTransformer
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		const changedSourceFile = TypeScript.visitNode(sourceFile, visit)
-		return TypeScript.factory.updateSourceFile(changedSourceFile, [
-			...newStatements,
-			...changedSourceFile.statements,
-		])
+		return TypeScript.factory.updateSourceFile(
+			changedSourceFile,
+			[...newStatements, ...changedSourceFile.statements],
+			sourceFile.isDeclarationFile,
+			sourceFile.referencedFiles,
+			sourceFile.typeReferenceDirectives,
+			sourceFile.hasNoDefaultLib,
+			sourceFile.libReferenceDirectives,
+		)
 	}
 	private getAllCommonJsExportedNames(
 		sourceFile: TypeScript.SourceFile,
@@ -522,6 +527,14 @@ export default class CommonJsTransformer
 				),
 			)
 		}
-		return TypeScript.factory.updateSourceFile(sourceFile, statements)
+		return TypeScript.factory.updateSourceFile(
+			sourceFile,
+			statements,
+			sourceFile.isDeclarationFile,
+			sourceFile.referencedFiles,
+			sourceFile.typeReferenceDirectives,
+			sourceFile.hasNoDefaultLib,
+			sourceFile.libReferenceDirectives,
+		)
 	}
 }

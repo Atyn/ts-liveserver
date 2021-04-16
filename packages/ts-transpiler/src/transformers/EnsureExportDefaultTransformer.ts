@@ -15,15 +15,24 @@ export default class EnsureExportDefaultTransformer
 		if (this.hasDefaultExport(sourceFile)) {
 			return sourceFile
 		}
-		return TypeScript.factory.updateSourceFile(sourceFile, [
-			...sourceFile.statements,
-			TypeScript.factory.createExportAssignment(
-				undefined,
-				undefined,
-				undefined,
-				TypeScript.factory.createNull(),
-			),
-		])
+		return TypeScript.factory.updateSourceFile(
+			sourceFile,
+			[
+				...sourceFile.statements,
+				TypeScript.factory.createExportAssignment(
+					undefined,
+					undefined,
+					undefined,
+					TypeScript.factory.createNull(),
+				),
+			],
+
+			sourceFile.isDeclarationFile,
+			sourceFile.referencedFiles,
+			sourceFile.typeReferenceDirectives,
+			sourceFile.hasNoDefaultLib,
+			sourceFile.libReferenceDirectives,
+		)
 	}
 	transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {
 		return node

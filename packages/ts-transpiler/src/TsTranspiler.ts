@@ -17,6 +17,8 @@ type Options = {
 	resolveAlias?: Record<string, string>
 }
 export default class TsTranspiler {
+	private compilerHost: TypeScript.CompilerHost
+	private program: TypeScript.Program
 	private compilerOptions: TypeScript.CompilerOptions = CompilerOptions
 	private transformers: TypeScript.CustomTransformers
 	constructor(options?: Options) {
@@ -32,6 +34,12 @@ export default class TsTranspiler {
 			],
 			after: [(context) => new EnsureExportDefaultTransformer(context)],
 		}
+		this.compilerHost = TypeScript.createCompilerHost(this.compilerOptions)
+		this.program = TypeScript.createProgram({
+			rootNames: [],
+			options: this.compilerOptions,
+			host: this.compilerHost,
+		})
 	}
 	async transformCode(
 		code: string,
@@ -65,13 +73,13 @@ export default class TsTranspiler {
 		}
 	}
 	public async resolveFilePath(fileName: string): Promise<string> {
-		if (await this.fileExists(Path.resolve(fileName))) {
+		if (this.fileExists(Path.resolve(fileName))) {
 			return Path.resolve(fileName)
 		}
 		const parsedFileName = Path.parse(fileName)
 		for (const extension of RESOLVE_EXTENSIONS) {
 			if (
-				await this.fileExists(
+				this.fileExists(
 					Path.resolve(parsedFileName.dir, parsedFileName.name + extension),
 				)
 			) {
@@ -80,12 +88,7 @@ export default class TsTranspiler {
 		}
 		throw new Error('Could not find file' + fileName)
 	}
-	private async fileExists(path: string) {
-		try {
-			await Fs.promises.stat(path)
-		} catch (error) {
-			return false
-		}
-		return true
+	private fileExists(path: string) {
+		return this.compilerHost.fileExists(path)
 	}
 }

@@ -126,24 +126,32 @@ export default class NodeEnvTransformer
 		if (!this.isIdentifierUsed(sourceFile, BUFFER_NAME)) {
 			return sourceFile
 		}
-		return TypeScript.factory.updateSourceFile(sourceFile, [
-			TypeScript.factory.createImportDeclaration(
-				undefined,
-				undefined,
-				TypeScript.factory.createImportClause(
-					false,
+		return TypeScript.factory.updateSourceFile(
+			sourceFile,
+			[
+				TypeScript.factory.createImportDeclaration(
 					undefined,
-					TypeScript.factory.createNamedImports([
-						TypeScript.factory.createImportSpecifier(
-							TypeScript.factory.createIdentifier(BUFFER_NAME),
-							TypeScript.factory.createIdentifier(BUFFER_NAME),
-						),
-					]),
+					undefined,
+					TypeScript.factory.createImportClause(
+						false,
+						undefined,
+						TypeScript.factory.createNamedImports([
+							TypeScript.factory.createImportSpecifier(
+								TypeScript.factory.createIdentifier(BUFFER_NAME),
+								TypeScript.factory.createIdentifier(BUFFER_NAME),
+							),
+						]),
+					),
+					TypeScript.factory.createStringLiteral(BUFFER_PACKAGE_NAME),
 				),
-				TypeScript.factory.createStringLiteral(BUFFER_PACKAGE_NAME),
-			),
-			...sourceFile.statements,
-		])
+				...sourceFile.statements,
+			],
+			sourceFile.isDeclarationFile,
+			sourceFile.referencedFiles,
+			sourceFile.typeReferenceDirectives,
+			sourceFile.hasNoDefaultLib,
+			sourceFile.libReferenceDirectives,
+		)
 	}
 	private isIdentifierDeclared(
 		sourceFile: TypeScript.Node,
