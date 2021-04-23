@@ -40,7 +40,5 @@ jobs:
           git push
       - name: Move git tag
         run: |
-          git tag -d --force v${{ github.event.inputs.version }}
-          git push origin :refs/tags/v${{ github.event.inputs.version }}
-          git tag v${{ github.event.inputs.version }} ${GITHUB_SHA}
+          git tag --force v${{ github.event.inputs.version }} ${GITHUB_SHA}
           git push origin --tags
