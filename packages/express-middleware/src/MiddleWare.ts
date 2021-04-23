@@ -1,42 +1,48 @@
 import Express from 'express'
 import Path from 'path'
 import Fs from 'fs'
+import TypeScript from 'typescript'
 import { TsTranspiler, DefaultResolveAlias } from '@ts-liveserver/ts-transpiler'
 import WatchScriptContent from './WatchScript'
 
 const CACHE_DIRECTORY = Path.sep + 'node_modules' + Path.sep
 const watchScriptContent = new WatchScriptContent()
 
-type Options = {
-	watch?: boolean
-}
+type WatchCallback = (filePath: string) => void
 type CacheObject = {
 	mTime: number
 	content: string
 }
+type Options = {
+	path: string
+	compilerOptions?: TypeScript.CompilerOptions
+	watchCallback?: WatchCallback
+}
 
 export default class MiddleWare {
 	private cache: Record<string, CacheObject> = {}
-	private path: string
 	private startTime = new Date().getTime()
-	private tsTranspiler = new TsTranspiler({
-		compilerOptions: {
-			inlineSourceMap: true,
-		},
-		resolveAlias: DefaultResolveAlias,
-	})
-	private options: Options
+	private tsTranspiler
+	private watchCallback?: WatchCallback
+	private rootPath: string
 	private watchedFiles = new Map()
-	constructor(path = '.', options = {}) {
-		this.path = path
-		this.options = options
+	constructor(options: Options) {
+		if (!options.path) {
+			throw new Error('No path given for MiddleWare')
+		}
+		this.rootPath = options.path
+		this.watchCallback = options.watchCallback
+		this.tsTranspiler = new TsTranspiler({
+			compilerOptions: options.compilerOptions,
+			resolveAlias: DefaultResolveAlias,
+		})
 	}
 	async onRequest(
 		request: Express.Request,
 		response: Express.Response,
 		next: () => void,
 	): Promise<void> {
-		if (this.options.watch && request.path === watchScriptContent.getUrl()) {
+		if (this.watchCallback && request.path === watchScriptContent.getUrl()) {
 			response.set(this.getHttpHeaders(0))
 			response.send(watchScriptContent.getCode())
 			return
@@ -46,7 +52,7 @@ export default class MiddleWare {
 				let resolvedFilePath = null
 				try {
 					resolvedFilePath = await this.tsTranspiler.resolveFilePath(
-						Path.resolve(this.path + request.path),
+						Path.resolve(this.rootPath + request.path),
 					)
 				} catch (error) {
 					response.sendStatus(404)
@@ -55,7 +61,7 @@ export default class MiddleWare {
 				const info = await Fs.promises.stat(resolvedFilePath)
 				const code = await this.getFileContent(resolvedFilePath, info.mtimeMs)
 				response.set(this.getHttpHeaders(info.mtimeMs))
-				if (this.options.watch && !resolvedFilePath.includes(CACHE_DIRECTORY)) {
+				if (this.watchCallback && !resolvedFilePath.includes(CACHE_DIRECTORY)) {
 					this.handleWatch(resolvedFilePath)
 					response.send(
 						code + '\n' + watchScriptContent.getImportCode(request.path),
@@ -109,7 +115,8 @@ export default class MiddleWare {
 		}
 	}
 	private onFileChanged(eventType: string, filePath: string) {
-		// eslint-disable-next-line no-console
-		console.log('File changed:', eventType, filePath)
+		if (this.watchCallback) {
+			this.watchCallback(filePath)
+		}
 	}
 }
