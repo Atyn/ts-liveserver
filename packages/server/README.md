@@ -18,25 +18,25 @@ ts-liveserver
 #### Serve from directory
 
 ```bash
-npx @ts-liveserver/server ./aDirectory/to/serve/from --sourcemaps --proxy=https://www.example.com/external/
+npx @ts-liveserver/server ./aDirectory/to/serve/from
 ```
 
 #### Watch
 
 ```bash
-npx @ts-liveserver/server --watch .
+npx @ts-liveserver/server --watch
 ```
 
 #### Source maps
 
 ```bash
-npx @ts-liveserver/server --sourcemaps .
+npx @ts-liveserver/server --sourcemaps
 ```
 
 #### Proxy
 
 ```bash
-npx @ts-liveserver/server --proxy=https://www.site1.com/external-1/,https://www.another-site/external-2/ .
+npx @ts-liveserver/server --proxy=https://www.site1.com/external-1/,https://www.another-site/external-2/
 ```
 
 ## Note about internal NodeJS modules
