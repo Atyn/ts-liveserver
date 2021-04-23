@@ -20,6 +20,7 @@ export default class DependencyResolver implements IEsmDependencyResolver {
 		dependencyName: string,
 	): string {
 		if (
+			dependencyName.startsWith('/') ||
 			dependencyName.startsWith('https://') ||
 			dependencyName.startsWith('http://')
 		) {
