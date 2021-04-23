@@ -22,10 +22,6 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: echo "Release v${{ github.event.inputs.version }}"
-      - name: Tag commit
-        run: git tag v${{ github.event.inputs.version }}
-      - name: Push tag
-        run: git push
       - name: Checkout release branch
         run: |
           git config --global user.name "${{ github.actor }}"
