@@ -1,12 +1,12 @@
-name: Build
+name: Validate commit
 on:
   - push
 jobs:
-  build:
+  validate-commit:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [15]
+        node-version: [15, 14]
     steps:
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -19,7 +19,7 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: ~/.npm
-          key: ${{ runner.os }}-build-${{ env.cache-name }}-${{ hashFiles('**/npm-shrinkwrap.json') }}
+          key: ${{ runner.os }}-npm-${{ env.cache-name }}-${{ matrix.node-version }}-${{ hashFiles('./package-lock.json') }}
           restore-keys: |
             ${{ runner.os }}-build-${{ env.cache-name }}-
             ${{ runner.os }}-build-
