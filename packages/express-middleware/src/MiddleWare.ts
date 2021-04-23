@@ -109,14 +109,13 @@ export default class MiddleWare {
 				{
 					persistent: false,
 				},
-				this.onFileChanged.bind(this),
+				() => {
+					if (this.watchCallback) {
+						this.watchCallback(filePath)
+					}
+				},
 			)
 			this.watchedFiles.set(filePath, watcher)
-		}
-	}
-	private onFileChanged(eventType: string, filePath: string) {
-		if (this.watchCallback) {
-			this.watchCallback(filePath)
 		}
 	}
 }

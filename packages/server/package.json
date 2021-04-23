@@ -24,6 +24,7 @@
 	"dependencies": {
 		"express": "^4.17.1",
 		"serve-index": "^1.9.1",
+		"http-proxy-middleware": "1.2.0",
 		"@ts-liveserver/express-middleware": "^0.0.0"
 	}
 }

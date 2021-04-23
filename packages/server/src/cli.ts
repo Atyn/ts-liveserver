@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 
 import Express from 'express'
+import { createProxyMiddleware } from 'http-proxy-middleware'
 import MiddleWare from '@ts-liveserver/express-middleware'
 import ServeIndex from 'serve-index'
 import ArgParser from './ArgParser'
@@ -8,12 +9,14 @@ import ArgParser from './ArgParser'
 const argParser = new ArgParser(Array.from(process.argv))
 const options = {
 	path: argParser.getPath() || process.cwd(),
-	watch: argParser.shouldUseWatch(),
+	watchCallback: argParser.shouldUseWatch()
+		? (filePath: string) => {
+				// eslint-disable-next-line no-console
+				console.log(filePath)
+		  }
+		: undefined,
 	inlineSourceMap: argParser.shouldUseSourceMaps(),
 }
-const proxyUrls = argParser.getProxyRules().map((str) => new URL(str))
-
-console.log(options)
 
 const middleWare = new MiddleWare(options)
 const app = Express()
@@ -27,6 +30,18 @@ app.listen(port, () => {
 		} using port ${port} with options ${JSON.stringify(options)}`,
 	)
 })
+
+const proxyUrls = argParser.getProxyRules().map((str) => new URL(str))
+for (const url of proxyUrls) {
+	app.use(
+		url.pathname,
+		createProxyMiddleware({
+			target: url.origin + '/',
+			changeOrigin: true,
+			autoRewrite: true,
+		}),
+	)
+}
 
 app.use(middleWare.onRequest.bind(middleWare))
 app.use(Express.static(options.path))
