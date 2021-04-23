@@ -19,6 +19,7 @@ type Options = {
 export default class TsTranspiler {
 	private compilerHost: TypeScript.CompilerHost
 	private program: TypeScript.Program
+	private typeChecker: TypeScript.TypeChecker
 	private compilerOptions: TypeScript.CompilerOptions = CompilerOptions
 	private transformers: TypeScript.CustomTransformers
 	constructor(options?: Options) {
@@ -39,7 +40,24 @@ export default class TsTranspiler {
 			rootNames: [],
 			options: this.compilerOptions,
 			host: this.compilerHost,
+			oldProgram: this.program,
 		})
+	}
+	private addFileToProgram(fileName: string) {
+		const sourceFile = this.program.getSourceFile(fileName)
+		if (sourceFile) {
+			return
+		}
+		const newProgram = TypeScript.createProgram({
+			rootNames: [fileName, ...this.program.getRootFileNames()],
+			options: this.program.getCompilerOptions(),
+			host: this.compilerHost,
+			oldProgram: this.program,
+		})
+		this.program = newProgram
+		console.log('all files:', this.program.getSourceFiles().length)
+		console.log('root:', this.program.getRootFileNames().length)
+		// console.log('root:', this.program.getRootFileNames())
 	}
 	async transformCode(
 		code: string,
@@ -53,7 +71,13 @@ export default class TsTranspiler {
 		})
 		if (results.diagnostics?.length) {
 			// eslint-disable-next-line no-console
-			console.log('diagnostics:', results.diagnostics)
+			console.log(
+				'diagnostics:',
+				TypeScript.formatDiagnosticsWithColorAndContext(
+					results.diagnostics,
+					this.compilerHost,
+				),
+			)
 		}
 		return results
 	}
@@ -67,6 +91,19 @@ export default class TsTranspiler {
 				outputText: fileContent,
 			}
 		}
+		this.addFileToProgram(fileName)
+		const sourceFile = this.program.getSourceFile(fileName)
+		console.log(sourceFile?.fileName)
+
+		/*
+		const sourceFile = this.compilerHost.getSourceFile(
+			fileName,
+			TypeScript.ScriptTarget.Latest,
+		)
+		if (fileName !== sourceFile?.fileName) {
+			console.log(fileName, sourceFile?.fileName)
+		}
+		*/
 		const buffer = await Fs.promises.readFile(fileName)
 		return {
 			...(await this.transformCode(buffer.toString(), fileName)),
