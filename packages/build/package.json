@@ -1,6 +1,6 @@
 {
 	"name": "@ts-liveserver/build",
-	"version": "0.0.0",
+	"version": "0.7.0",
 	"license": "ISC",
 	"publishConfig": {
 		"access": "public"
@@ -20,7 +20,7 @@
 		"ts-jest": "^26.1.0"
 	},
 	"dependencies": {
-		"typescript": "4.x.x",
-		"@ts-liveserver/ts-transpiler": "^0.0.0"
+		"@ts-liveserver/ts-transpiler": "^0.7.0",
+		"typescript": "4.x.x"
 	}
 }
