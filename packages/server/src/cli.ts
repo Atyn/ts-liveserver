@@ -1,34 +1,33 @@
 #!/usr/bin/env node
 
-import Express from 'express'
-import MiddleWare from '@ts-liveserver/express-middleware'
-import ServeIndex from 'serve-index'
+import ArgParser from './ArgParser'
+import Server from './Server'
+import HttpProxy from 'http-proxy'
 
-const argArray = Array.from(process.argv)
-const path = argArray.find((name) => name.startsWith('.')) || process.cwd()
-const options = {
-	watch: argArray.some((arg) => arg.startsWith('--watch')),
-}
-
-const middleWare = new MiddleWare(path, options)
-const app = Express()
-const port = 8080
-
-app.listen(port, () => {
-	// eslint-disable-next-line no-console
-	console.log(
-		`serve directory ${path} using port ${port} with options ${JSON.stringify(
-			options,
-		)}`,
-	)
+const argParser = new ArgParser(Array.from(process.argv))
+const server = new Server({
+	path: argParser.getPath() || process.cwd(),
+	watch: argParser.shouldUseWatch(),
+	sourcemaps: argParser.shouldUseSourceMaps(),
+	proxy: getHttpProxy(),
 })
-
-app.use(middleWare.onRequest.bind(middleWare))
-app.use(Express.static(path))
-app.use(ServeIndex(path))
+server.start(8080)
 
 process.on('uncaughtException', (error) => {
 	// eslint-disable-next-line no-console
 	console.error(error)
 	process.exit(1)
 })
+
+function getHttpProxy(): Record<string, HttpProxy.ServerOptions> {
+	const proxy: Record<string, HttpProxy.ServerOptions> = {}
+	const proxyUrls = argParser.getProxyRules().map((str) => new URL(str))
+	for (const url of proxyUrls) {
+		proxy[url.pathname] = {
+			target: url.origin + '/',
+			changeOrigin: true,
+			autoRewrite: true,
+		}
+	}
+	return proxy
+}
