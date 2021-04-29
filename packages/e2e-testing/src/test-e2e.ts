@@ -6,15 +6,19 @@ import Path from 'path'
 import Fs from 'fs'
 
 const SNAPSHOT_NAME = 'snapshots/snapshot.html'
-const WAIT_TIME = 5000 // For Windows
-main()
+const WAIT_TIME = 10000 // For Windows
+main().catch((error) => {
+	// eslint-disable-next-line no-console
+	console.error(error)
+	process.exit(1)
+})
 
 async function main() {
-	const childProcess = ChildProcess.exec('npm run test-environment:serve', {
+	const childProcess = ChildProcess.spawn('npm run test-environment:serve', {
 		cwd: Path.resolve('..', 'test-environment'),
-	})
-	childProcess.stdout?.on('data', (data) => {
-		process.stdout.write(data)
+		detached: false,
+		shell: true,
+		stdio: 'pipe',
 	})
 	// eslint-disable-next-line no-console
 	console.log('Wait', WAIT_TIME, 'ms...')
@@ -24,14 +28,10 @@ async function main() {
 	try {
 		await runPuppeteer()
 	} catch (error) {
-		childProcess.stdin?.end()
 		childProcess.kill()
-		await new Promise((resolve) => setTimeout(resolve, 500))
 		throw error
 	}
-	childProcess.stdin?.end()
 	childProcess.kill()
-	await new Promise((resolve) => setTimeout(resolve, 500))
 	process.exit(0)
 }
 
@@ -44,7 +44,7 @@ async function runPuppeteer() {
 	const page = await browser.newPage()
 	// eslint-disable-next-line no-console
 	page.on('console', (msg) => console.log('PAGE LOG:', msg.text()))
-	await page.goto('http://127.1.1.1:8080', {
+	await page.goto('http://localhost:8080', {
 		waitUntil: ['domcontentloaded', 'networkidle0', 'networkidle2', 'load'],
 	})
 	const innerText = await page.evaluate(() => document.body.innerHTML)
