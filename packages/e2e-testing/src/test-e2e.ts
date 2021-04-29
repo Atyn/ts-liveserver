@@ -6,7 +6,7 @@ import Path from 'path'
 import Fs from 'fs'
 
 const SNAPSHOT_NAME = 'snapshots/snapshot.html'
-const WAIT_TIME = 10000 // For Windows
+const WAIT_TIME = 1000 // For Windows
 main().catch((error) => {
 	// eslint-disable-next-line no-console
 	console.error(error)
@@ -16,7 +16,7 @@ main().catch((error) => {
 async function main() {
 	const childProcess = ChildProcess.spawn('npm run test-environment:serve', {
 		cwd: Path.resolve('..', 'test-environment'),
-		detached: false,
+		detached: true,
 		shell: true,
 		stdio: 'pipe',
 	})
