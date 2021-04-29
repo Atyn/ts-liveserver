@@ -8,7 +8,7 @@ const NODE_PROCESS: Record<string, string> = {
 }
 const NODE_PROCESS_ENV: Record<string, string> = {
 	get NODE_ENV(): string {
-		return process.env.NODE_ENV || 'production'
+		return process.env.NODE_ENV || 'development'
 	},
 	NODE_DEBUG: '',
 }

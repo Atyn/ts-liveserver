@@ -1,11 +1,11 @@
-name: Validate commit
+name: E2E-testing
 on:
   - push
 jobs:
-  validate-commit:
+  e2e-testing:
     strategy:
       matrix:
-        node-version: [15]
+        node-version: [15, 14]
         os: ['ubuntu-20.04']
     runs-on: ${{ matrix.os }}
     steps:
@@ -26,7 +26,6 @@ jobs:
             ${{ runner.os }}-build-
             ${{ runner.os }}-
       - run: npm ci
+      - run: git checkout .
       - run: npm run build
-      - run: npm test
-      - run: npm run lint
       - run: npm run test:e2e

@@ -1,0 +1,15 @@
+{
+	"name": "@ts-liveserver/e2e-testing",
+	"private": true,
+	"license": "ISC",
+	"version": "0.0.0",
+	"scripts": {
+		"build": "tsc --build",
+		"watch": "tsc --build --watch",
+		"test:e2e": "node ./dist/test-e2e.js"
+	},
+	"devDependencies": {
+		"puppeteer": "^9.0.0",
+		"@ts-liveserver/test-environment": "^0.0.0"
+	}
+}

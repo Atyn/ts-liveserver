@@ -19,6 +19,9 @@
 			"path": "packages/build"
 		},
 		{
+			"path": "packages/e2e-testing"
+		},
+		{
 			"path": "packages/express-middleware"
 		},
 		{
