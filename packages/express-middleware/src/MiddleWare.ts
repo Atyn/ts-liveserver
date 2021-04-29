@@ -51,6 +51,7 @@ export default class MiddleWare {
 					response.sendStatus(404)
 					return
 				}
+
 				const info = await Fs.promises.stat(resolvedFilePath)
 				const code = await this.getFileContent(resolvedFilePath, info.mtimeMs)
 				response.set(this.getHttpHeaders(info.mtimeMs))

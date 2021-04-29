@@ -9,6 +9,7 @@ import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
 import EnsureExportDefaultTransformer from './transformers/EnsureExportDefaultTransformer'
 import InternalDependencyReducer from './transformers/InternalDependencyReducer'
 import DependencyResolver from './DependencyResolver'
+import LanguageService from './LanguageService'
 
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
 
@@ -16,10 +17,13 @@ type Options = {
 	compilerOptions?: TypeScript.CompilerOptions
 	resolveAlias?: Record<string, string>
 }
+
 export default class TsTranspiler {
+	private documentRegistry = TypeScript.createDocumentRegistry()
+	private languageService: LanguageService
+	// private languageServiceHost: LanguageServiceHost
 	private compilerHost: TypeScript.CompilerHost
-	private program: TypeScript.Program
-	private typeChecker: TypeScript.TypeChecker
+	// private program: TypeScript.Program
 	private compilerOptions: TypeScript.CompilerOptions = CompilerOptions
 	private transformers: TypeScript.CustomTransformers
 	constructor(options?: Options) {
@@ -31,18 +35,49 @@ export default class TsTranspiler {
 				(context) => new InternalDependencyReducer(context),
 				(context) => new CodeOptimizerTransformer(context),
 				(context) => new CommonJsTransformer(context),
-				(context) => new ResolveTransformer(context, dependencyResolver),
 			],
-			after: [(context) => new EnsureExportDefaultTransformer(context)],
+			after: [
+				(context) => new ResolveTransformer(context, dependencyResolver),
+				(context) => new EnsureExportDefaultTransformer(context),
+			],
 		}
 		this.compilerHost = TypeScript.createCompilerHost(this.compilerOptions)
+		this.languageService = new LanguageService({
+			dependencyResolver: dependencyResolver,
+			compilerOptions: {
+				...this.compilerOptions,
+				skipLibCheck: false,
+				checkJs: true,
+			},
+			transformers: {
+				before: [
+					(context) => new NodeEnvTransformer(context),
+					(context) => new InternalDependencyReducer(context),
+					(context) => new CodeOptimizerTransformer(context),
+					(context) => new CommonJsTransformer(context),
+				],
+			},
+		})
+		/*
+		this.languageServiceHost = new LanguageServiceHost(
+			this.compilerOptions,
+			this.transformers,
+		)
+		this.languageService = TypeScript.createLanguageService(
+			this.languageServiceHost,
+			this.documentRegistry,
+		)
+		*/
+		/*
 		this.program = TypeScript.createProgram({
 			rootNames: [],
 			options: this.compilerOptions,
 			host: this.compilerHost,
 			oldProgram: this.program,
 		})
+		*/
 	}
+	/*
 	private addFileToProgram(fileName: string) {
 		const sourceFile = this.program.getSourceFile(fileName)
 		if (sourceFile) {
@@ -59,6 +94,7 @@ export default class TsTranspiler {
 		console.log('root:', this.program.getRootFileNames().length)
 		// console.log('root:', this.program.getRootFileNames())
 	}
+	*/
 	async transformCode(
 		code: string,
 		fileName: string,
@@ -91,9 +127,12 @@ export default class TsTranspiler {
 				outputText: fileContent,
 			}
 		}
-		this.addFileToProgram(fileName)
-		const sourceFile = this.program.getSourceFile(fileName)
-		console.log(sourceFile?.fileName)
+		//this.languageServiceHost.addFile(fileName)
+		// console.log(this.languageService.getSyntacticDiagnostics(fileName))
+		// console.log('output:', output)
+		// this.addFileToProgram(fileName)
+		// const sourceFile = this.program.getSourceFile(fileName)
+		// console.log(sourceFile?.fileName)
 
 		/*
 		const sourceFile = this.compilerHost.getSourceFile(
@@ -105,9 +144,9 @@ export default class TsTranspiler {
 		}
 		*/
 		const buffer = await Fs.promises.readFile(fileName)
-		return {
-			...(await this.transformCode(buffer.toString(), fileName)),
-		}
+		const results = await this.transformCode(buffer.toString(), fileName)
+		await this.languageService.transformFile(fileName)
+		return results
 	}
 	public async resolveFilePath(fileName: string): Promise<string> {
 		if (this.fileExists(Path.resolve(fileName))) {
