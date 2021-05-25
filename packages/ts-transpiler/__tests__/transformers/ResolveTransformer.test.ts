@@ -3,21 +3,30 @@ import TypeScript from 'typescript'
 
 describe('ResolveTransformer', () => {
 	describe('transformSourceFile', () => {
+		it('Should convert static import with reference', async () => {
+			const input = 'import Hello from "./hello.ts"; console.log(Hello)'
+			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			expect(await transformWithPlugin(input, true)).toMatchSnapshot()
+		})
 		it('Should convert static import', async () => {
 			const input = 'import "./hello.ts";'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			expect(await transformWithPlugin(input, true)).toMatchSnapshot()
 		})
 		it('Should convert async import', async () => {
 			const input = '{ import("./hello.ts") }'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			expect(await transformWithPlugin(input, true)).toMatchSnapshot()
 		})
 		it('Should convert forward', async () => {
 			const input = 'export { default as something } from "../a/b"'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			expect(await transformWithPlugin(input, true)).toMatchSnapshot()
 		})
 		it('Should convert named imports', async () => {
 			const input = 'import { hello } from "../a/b"; console.log(hello)'
 			expect(await transformWithPlugin(input)).toMatchSnapshot()
+			expect(await transformWithPlugin(input, true)).toMatchSnapshot()
 		})
 	})
 })
@@ -38,16 +47,21 @@ const compilerOptions: TypeScript.CompilerOptions = {
 	sourceMap: false,
 }
 
-const transformers: TypeScript.CustomTransformers = {
-	after: [
-		(context) =>
-			new ResolveTransformer(context, {
-				resolveDependencyName: () => 'B',
-			}),
-	],
-}
-
-async function transformWithPlugin(code: string): Promise<string> {
+async function transformWithPlugin(
+	code: string,
+	ignore = false,
+): Promise<string> {
+	const transformers: TypeScript.CustomTransformers = {
+		after: [
+			(context) =>
+				new ResolveTransformer(context, {
+					resolveDependencyName: () => ({
+						path: 'B',
+						ignore: ignore,
+					}),
+				}),
+		],
+	}
 	const results = await TypeScript.transpileModule(code, {
 		compilerOptions: compilerOptions,
 		fileName: 'hello.ts',

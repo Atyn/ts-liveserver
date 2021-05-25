@@ -11,9 +11,9 @@
 		"test": "lerna run test --stream",
 		"test:e2e": "lerna run test:e2e --stream",
 		"test:update": "npm run test:update-snapshot && npm run test:e2e && npm run lint:fix",
-		"test:update-snapshot": "lerna run test:updateSnapshot --stream",
+		"test:update-snapshot": "lerna run test:update-snapshot --stream",
 		"deploy": "npm run build && lerna run --stream test-environment:deploy",
-		"start": "npm run build && npm run test-environment:serve",
+		"start": "npm run build && npm run serve",
 		"serve": "lerna run test-environment:serve --stream",
 		"lint": "eslint --max-warnings 0 --ignore-path .gitignore . && prettier --check --ignore-path .gitignore .",
 		"lint:fix": "eslint --fix --max-warnings 0 --ignore-path .gitignore . && prettier --write --ignore-path .gitignore ."
