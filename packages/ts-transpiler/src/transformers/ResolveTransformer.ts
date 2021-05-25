@@ -24,21 +24,24 @@ export default class ResolveTransformer
 	private resolveStaticImport(
 		sourceFile: TypeScript.SourceFile,
 	): TypeScript.SourceFile {
-		const visit = (node: TypeScript.Node): TypeScript.Node => {
+		const visit = (node: TypeScript.Node): TypeScript.Node | undefined => {
 			if (
 				TypeScript.isImportDeclaration(node) &&
 				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
-				const resolvedName = this.getDependencyName(
+				const resolveResult = this.resolver.resolveDependencyName(
 					sourceFile.fileName,
 					node.moduleSpecifier.text,
 				)
+				if (resolveResult.ignore) {
+					return this.createEmptyVariableStatement(node.importClause?.name)
+				}
 				return TypeScript.factory.updateImportDeclaration(
 					node,
 					node.decorators,
 					node.modifiers,
 					node.importClause,
-					TypeScript.factory.createStringLiteral(resolvedName),
+					TypeScript.factory.createStringLiteral(resolveResult.path),
 				)
 			}
 			if (
@@ -46,7 +49,7 @@ export default class ResolveTransformer
 				node.moduleSpecifier &&
 				TypeScript.isStringLiteral(node.moduleSpecifier)
 			) {
-				const resolvedName = this.getDependencyName(
+				const resolveResult = this.resolver.resolveDependencyName(
 					sourceFile.fileName,
 					node.moduleSpecifier.text,
 				)
@@ -56,7 +59,7 @@ export default class ResolveTransformer
 					node.modifiers,
 					node.isTypeOnly,
 					node.exportClause,
-					TypeScript.factory.createStringLiteral(resolvedName),
+					TypeScript.factory.createStringLiteral(resolveResult.path),
 				)
 			}
 			return node
@@ -74,18 +77,35 @@ export default class ResolveTransformer
 				TypeScript.isStringLiteral(node) &&
 				node === node.parent.arguments[0]
 			) {
-				return TypeScript.factory.createStringLiteral(
-					this.getDependencyName(sourceFile.fileName, node.text),
+				const resolveResult = this.resolver.resolveDependencyName(
+					sourceFile.fileName,
+					node.text,
 				)
+				return TypeScript.factory.createStringLiteral(resolveResult.path)
 			}
 			return TypeScript.visitEachChild(node, visit, this.context)
 		}
 		return TypeScript.visitEachChild(sourceFile, visit, this.context)
 	}
-	private getDependencyName(
-		parentFilePath: string,
-		dependencyName: string,
-	): string {
-		return this.resolver.resolveDependencyName(parentFilePath, dependencyName)
+	private createEmptyVariableStatement(
+		name: TypeScript.Identifier | undefined,
+	): TypeScript.VariableStatement | undefined {
+		if (name === undefined) {
+			return undefined
+		}
+		return TypeScript.factory.createVariableStatement(
+			undefined,
+			TypeScript.factory.createVariableDeclarationList(
+				[
+					TypeScript.factory.createVariableDeclaration(
+						name,
+						undefined,
+						undefined,
+						TypeScript.factory.createObjectLiteralExpression(),
+					),
+				],
+				TypeScript.NodeFlags.Let,
+			),
+		)
 	}
 }
