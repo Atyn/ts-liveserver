@@ -1,6 +1,5 @@
 import TsTranspiler from '../src/TsTranspiler'
 import Path from 'path'
-import Fs from 'fs'
 
 describe('TsTranspiler', () => {
 	it('Transpile a module', async () => {
@@ -11,10 +10,6 @@ describe('TsTranspiler', () => {
 				Path.resolve(__dirname, 'inputData', inputFileName),
 			)
 		).outputText
-		expect(results).toBe(
-			Fs.readFileSync(
-				Path.resolve(__dirname, 'outputData', 'ModuleA.js'),
-			).toString(),
-		)
+		expect(results).toMatchSnapshot()
 	})
 })

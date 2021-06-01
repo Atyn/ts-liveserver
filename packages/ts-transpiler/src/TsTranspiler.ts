@@ -6,9 +6,9 @@ import ResolveTransformer from './transformers/ResolveTransformer'
 import CommonJsTransformer from './transformers/CommonJsTransformer'
 import NodeEnvTransformer from './transformers/NodeEnvTransformer'
 import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
-import EnsureExportDefaultTransformer from './transformers/EnsureExportDefaultTransformer'
 import InternalDependencyReducer from './transformers/InternalDependencyReducer'
 import DependencyResolver from './DependencyResolver'
+import LanguageService from './LanguageService'
 
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
 
@@ -17,37 +17,27 @@ type Options = {
 	resolveAlias?: Record<string, string>
 }
 export default class TsTranspiler {
+	private languageService: LanguageService
 	private compilerOptions: TypeScript.CompilerOptions = CompilerOptions
-	private transformers: TypeScript.CustomTransformers
 	constructor(options?: Options) {
 		const dependencyResolver = new DependencyResolver(options?.resolveAlias)
-		Object.assign(this.compilerOptions, options?.compilerOptions)
-		this.transformers = {
-			before: [
-				(context) => new NodeEnvTransformer(context),
-				(context) => new InternalDependencyReducer(context),
-				(context) => new CodeOptimizerTransformer(context),
-				(context) => new CommonJsTransformer(context),
-				(context) => new ResolveTransformer(context, dependencyResolver),
-			],
-			after: [(context) => new EnsureExportDefaultTransformer(context)],
-		}
-	}
-	async transformCode(
-		code: string,
-		fileName: string,
-	): Promise<TypeScript.TranspileOutput> {
-		const results = TypeScript.transpileModule(code, {
-			compilerOptions: this.compilerOptions,
-			fileName: fileName,
-			reportDiagnostics: true,
-			transformers: this.transformers,
+		Object.assign(this.compilerOptions, options?.compilerOptions, {
+			rootDir: '../..',
 		})
-		if (results.diagnostics?.length) {
-			// eslint-disable-next-line no-console
-			console.log('diagnostics:', results.diagnostics)
-		}
-		return results
+		this.languageService = new LanguageService({
+			dependencyResolver: dependencyResolver,
+			compilerOptions: this.compilerOptions,
+			transformers: {
+				before: [
+					(context) => new NodeEnvTransformer(context),
+					(context) => new CodeOptimizerTransformer(context),
+				],
+				after: [
+					(context) => new CommonJsTransformer(context),
+					(context) => new ResolveTransformer(context, dependencyResolver),
+				],
+			},
+		})
 	}
 	public async transformFile(
 		fileName: string,
@@ -59,10 +49,7 @@ export default class TsTranspiler {
 				outputText: fileContent,
 			}
 		}
-		const buffer = await Fs.promises.readFile(fileName)
-		return {
-			...(await this.transformCode(buffer.toString(), fileName)),
-		}
+		return await this.languageService.transformFile(fileName)
 	}
 	public async resolveFilePath(fileName: string): Promise<string> {
 		if (await this.fileExists(Path.resolve(fileName))) {
