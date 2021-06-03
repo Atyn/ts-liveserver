@@ -1,6 +1,6 @@
 {
 	"name": "@ts-liveserver/ts-transpiler",
-	"version": "0.0.0",
+	"version": "2.0.0",
 	"license": "ISC",
 	"main": "dist/index.js",
 	"publishConfig": {
@@ -14,12 +14,12 @@
 		"test": "jest"
 	},
 	"peerDependencies": {
+		"assert": "^2.0.0",
+		"browserify-zlib": "^0.2.0",
+		"buffer": "^6.0.3",
 		"events": "^3.3.0",
 		"stream": "^0.0.2",
-		"buffer": "^6.0.3",
-		"util": "^0.12.3",
-		"browserify-zlib": "^0.2.0",
-		"assert": "^2.0.0"
+		"util": "^0.12.3"
 	},
 	"devDependencies": {
 		"@types/express": "^4.17.9",
@@ -28,7 +28,7 @@
 		"ts-jest": "^26.1.0"
 	},
 	"dependencies": {
-		"typescript": "4.x.x",
-		"enhanced-resolve": "5.x.x"
+		"enhanced-resolve": "5.x.x",
+		"typescript": "4.x.x"
 	}
 }
