@@ -45,6 +45,7 @@ async function runPuppeteer() {
 	// eslint-disable-next-line no-console
 	page.on('console', (msg) => console.log('PAGE LOG:', msg.text()))
 	await page.goto('http://localhost:8080', {
+		timeout: 60000,
 		waitUntil: ['domcontentloaded', 'networkidle0', 'networkidle2', 'load'],
 	})
 	const innerText = await page.evaluate(() => document.body.innerHTML)
