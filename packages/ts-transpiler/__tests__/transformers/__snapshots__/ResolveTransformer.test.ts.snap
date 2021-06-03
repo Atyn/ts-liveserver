@@ -6,11 +6,33 @@ exports[`ResolveTransformer transformSourceFile Should convert async import 1`] 
 }"
 `;
 
+exports[`ResolveTransformer transformSourceFile Should convert async import 2`] = `
+"{
+    import(\\"B\\");
+}"
+`;
+
 exports[`ResolveTransformer transformSourceFile Should convert forward 1`] = `"export { default as something } from \\"B\\";"`;
+
+exports[`ResolveTransformer transformSourceFile Should convert forward 2`] = `"export { default as something } from \\"B\\";"`;
 
 exports[`ResolveTransformer transformSourceFile Should convert named imports 1`] = `
 "import { hello } from \\"B\\";
 console.log(hello);"
 `;
 
+exports[`ResolveTransformer transformSourceFile Should convert named imports 2`] = `"console.log(hello);"`;
+
 exports[`ResolveTransformer transformSourceFile Should convert static import 1`] = `"import \\"B\\";"`;
+
+exports[`ResolveTransformer transformSourceFile Should convert static import 2`] = `""`;
+
+exports[`ResolveTransformer transformSourceFile Should convert static import with reference 1`] = `
+"import Hello from \\"B\\";
+console.log(Hello);"
+`;
+
+exports[`ResolveTransformer transformSourceFile Should convert static import with reference 2`] = `
+"let Hello = {};
+console.log(Hello);"
+`;

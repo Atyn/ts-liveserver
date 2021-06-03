@@ -2,6 +2,11 @@ import Path from 'path'
 import Resolve from 'enhanced-resolve'
 import IEsmDependencyResolver from './types/IEsmDependencyResolver'
 
+type ReturnType = {
+	path: string
+	ignore?: boolean
+}
+
 const RESOLVE_EXTENSIONS = ['.js', '.ts', '.tsx', '.jsx', '.json', '.mjs']
 const ALIAS_FIELDS = ['browser', 'module']
 export default class DependencyResolver implements IEsmDependencyResolver {
@@ -18,30 +23,38 @@ export default class DependencyResolver implements IEsmDependencyResolver {
 	public resolveDependencyName(
 		parentFilePath: string,
 		dependencyName: string,
-	): string {
+	): ReturnType {
 		if (
 			dependencyName.startsWith('/') ||
 			dependencyName.startsWith('https://') ||
 			dependencyName.startsWith('http://')
 		) {
-			return dependencyName
+			return {
+				path: dependencyName,
+			}
 		}
-		const absolutePath = this.resolveDependencyPath(
+		const resolveResult = this.resolveDependencyPath(
 			parentFilePath,
 			dependencyName,
 		)
+		if (resolveResult.ignore) {
+			return resolveResult
+		}
+		const absolutePath = resolveResult.path
 		const pathObj = Path.parse(absolutePath)
 		const relativeDir =
 			Path.relative(Path.dirname(parentFilePath), pathObj.dir) || '.'
 		const result = relativeDir + '/' + pathObj.name + '.js'
 		const posixResult = Path.posix.normalize(result).replace(/\\/g, '/')
-		return posixResult.startsWith('.') ? posixResult : './' + posixResult
+		return {
+			path: posixResult.startsWith('.') ? posixResult : './' + posixResult,
+		}
 	}
 	// Return an absolute path e.g. /tmp/a-apath/node_modules/hello/module.js
 	public resolveDependencyPath(
 		parentFilePath: string,
 		dependencyName: string,
-	): string {
+	): ReturnType {
 		if (this.alias && dependencyName in this.alias) {
 			return this.resolveDependencyPath(
 				parentFilePath,
@@ -54,10 +67,13 @@ export default class DependencyResolver implements IEsmDependencyResolver {
 			dependencyName,
 		)
 		if (result === false) {
-			throw new Error(
-				`Could not resolve "${dependencyName}" from ${parentFilePath}`,
-			)
+			return {
+				ignore: true,
+				path: dependencyName,
+			}
 		}
-		return result
+		return {
+			path: result,
+		}
 	}
 }
