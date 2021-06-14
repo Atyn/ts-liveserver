@@ -22,7 +22,7 @@ export default class LanguageServiceHost
 			baseUrl: '.',
 			traceResolution: false,
 			noEmitOnError: false,
-			checkJs: true,
+			checkJs: false,
 			downlevelIteration: true,
 			esModuleInterop: true,
 			alwaysStrict: false,

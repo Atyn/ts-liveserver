@@ -27,6 +27,24 @@ describe('NodeEnvTransformer', () => {
 			await transformWithoutPlugin(output),
 		)
 	})
+	it('Should add buffer if it is used', async () => {
+		const input = `console.log(Buffer)`
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
+	it('Should not add buffer if it is used but already imported', async () => {
+		const input = `
+		import Buffer from 'anotherBuffer.js'
+		console.log(Buffer)
+		`
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
+	it('Should not add buffer if it is used but already imported', async () => {
+		const input = `
+		import { AnotherBuffer as Buffer } from 'anotherBuffer.js'
+		console.log(Buffer)
+		`
+		expect(await transformWithPlugin(input)).toMatchSnapshot()
+	})
 })
 
 const compilerOptions: TypeScript.CompilerOptions = {

@@ -21,9 +21,18 @@ export async function getSomething() {
 				<path d="${path}" />
 			</svg>
 	`
-	document.body.appendChild(div)
 	const phone = await import('libphonenumber-js')
 	// eslint-disable-next-line no-console
 	console.log('phone:', phone)
-	return content.default
+	document.body.appendChild(div)
+	const babylonButton = document.createElement('button')
+	babylonButton.innerHTML = 'Load BabylonJS'
+	babylonButton.addEventListener('click', loadBabylon)
+	document.body.appendChild(babylonButton)
+}
+
+async function loadBabylon() {
+	const Babylon = await import('@babylonjs/core')
+	// eslint-disable-next-line no-console
+	console.log('Babylon:', Babylon)
 }
