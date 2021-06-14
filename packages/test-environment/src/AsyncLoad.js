@@ -22,11 +22,11 @@ export async function getSomething() {
 			</svg>
 	`
 	document.body.appendChild(div)
-	const phone = await import('libphonenumber-js')
-	// eslint-disable-next-line no-console
-	console.log('phone:', phone)
 	const Babylon = await import('@babylonjs/core')
 	// eslint-disable-next-line no-console
 	console.log('Babylon:', Babylon)
+	const phone = await import('libphonenumber-js')
+	// eslint-disable-next-line no-console
+	console.log('phone:', phone)
 	return content.default
 }

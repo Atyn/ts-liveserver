@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`NodeEnvTransformer Should add buffer if it is used 1`] = `
+"import { Buffer as Buffer } from \\"buffer\\";
+console.log(Buffer);"
+`;
+
+exports[`NodeEnvTransformer Should not add buffer if it is used but already imported 1`] = `
+"import Buffer from 'anotherBuffer.js';
+console.log(Buffer);"
+`;
+
+exports[`NodeEnvTransformer Should not add buffer if it is used but already imported 2`] = `
+"import { AnotherBuffer as Buffer } from 'anotherBuffer.js';
+console.log(Buffer);"
+`;

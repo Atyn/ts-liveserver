@@ -146,9 +146,29 @@ export default class NodeEnvTransformer
 		])
 	}
 	private isIdentifierDeclared(
-		sourceFile: TypeScript.Node,
+		sourceFile: TypeScript.SourceFile,
 		name: string,
 	): boolean {
+		for (const statement of sourceFile.statements) {
+			if (TypeScript.isImportDeclaration(statement)) {
+				if (
+					statement.importClause?.name &&
+					TypeScript.isIdentifier(statement.importClause.name) &&
+					statement.importClause.name.text === name
+				) {
+					return true
+				}
+				if (
+					statement.importClause?.namedBindings &&
+					TypeScript.isNamedImports(statement.importClause.namedBindings) &&
+					statement.importClause.namedBindings.elements.some(
+						(element) => element.name.text === name,
+					)
+				) {
+					return true
+				}
+			}
+		}
 		let isDeclared = false
 		const visit = (node: TypeScript.Node): TypeScript.Node => {
 			if (isDeclared) {

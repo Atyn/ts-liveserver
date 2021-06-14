@@ -6,7 +6,6 @@ import ResolveTransformer from './transformers/ResolveTransformer'
 import CommonJsTransformer from './transformers/CommonJsTransformer'
 import NodeEnvTransformer from './transformers/NodeEnvTransformer'
 import CodeOptimizerTransformer from './transformers/CodeOptimizerTransformer'
-import InternalDependencyReducer from './transformers/InternalDependencyReducer'
 import DependencyResolver from './DependencyResolver'
 import LanguageService from './LanguageService'
 
