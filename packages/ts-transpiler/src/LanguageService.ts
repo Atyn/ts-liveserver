@@ -23,6 +23,32 @@ export default class LanguageService {
 	}
 	public transformFile(filePath: string): Promise<TypeScript.TranspileOutput> {
 		this.languageServiceHost.addFile(filePath)
+		const program = this.languageService.getProgram()
+		if (program) {
+			const sourceFile = program.getSourceFile(filePath)
+			const statements = sourceFile?.statements || []
+			for (const statement of statements) {
+				if (
+					TypeScript.isImportDeclaration(statement) &&
+					statement.importClause?.namedBindings &&
+					TypeScript.isNamedImports(statement.importClause.namedBindings)
+				) {
+					for (const element of statement.importClause.namedBindings.elements) {
+						if (TypeScript.isImportSpecifier(element)) {
+							const typeChecker = program.getTypeChecker()
+							const symbol = typeChecker.getSymbolAtLocation(element.name)
+							console.log(symbol?.declarations)
+							console.log('calue:', symbol?.valueDeclaration)
+							console.log('exports:', symbol?.exports)
+
+							if (symbol) {
+								// console.log(typeChecker.getDeclaredTypeOfSymbol(symbol))
+							}
+						}
+					}
+				}
+			}
+		}
 		const emitResult = this.languageService.getEmitOutput(
 			filePath,
 			false,
@@ -31,5 +57,26 @@ export default class LanguageService {
 		return Promise.resolve({
 			outputText: emitResult.outputFiles[0].text,
 		})
+		/*
+		return Promise.resolve(
+			this.optimizeCode(emitResult.outputFiles[0].text, filePath),
+		)
+		*/
+	}
+	public optimizeCode(
+		code: string,
+		filePath: string,
+	): TypeScript.TranspileOutput {
+		const program = this.languageService.getProgram()
+
+		TypeScript.createUnparsedSourceFile(code)
+		const results = TypeScript.transpileModule(code, {
+			compilerOptions: {},
+			fileName: filePath,
+			transformers: {
+				before: [(context) => (node) => node],
+			},
+		})
+		return results
 	}
 }
