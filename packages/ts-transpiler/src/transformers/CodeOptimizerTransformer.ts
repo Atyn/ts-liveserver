@@ -4,7 +4,8 @@ import TypeScript from 'typescript'
 Replaces process.env.NODE_ENV in code
 */
 export default class CodeOptimizerTransformer
-	implements TypeScript.CustomTransformer {
+	implements TypeScript.CustomTransformer
+{
 	private context: TypeScript.TransformationContext
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context
@@ -14,9 +15,8 @@ export default class CodeOptimizerTransformer
 	): TypeScript.SourceFile {
 		const withoutUseStrict = this.reduceUseStrict(sourceFile)
 		const wihoutEmptyFunctions = this.reduceEmptyFunctions(withoutUseStrict)
-		const reducedBinaryExpressions = this.reduceBinaryExpressions(
-			wihoutEmptyFunctions,
-		)
+		const reducedBinaryExpressions =
+			this.reduceBinaryExpressions(wihoutEmptyFunctions)
 		return this.reduceIfStatements(reducedBinaryExpressions)
 	}
 	public transformBundle(node: TypeScript.Bundle): TypeScript.Bundle {

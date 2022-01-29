@@ -6,7 +6,8 @@ const INTERNAL_PACKAGES = ['path', 'util']
 Removed require('path')
 */
 export default class InternalDependencyReducer
-	implements TypeScript.CustomTransformer {
+	implements TypeScript.CustomTransformer
+{
 	private context: TypeScript.TransformationContext
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context

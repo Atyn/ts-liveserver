@@ -4,7 +4,8 @@ import TypeScript from 'typescript'
 Replaces process.env.NODE_ENV in code
 */
 export default class EnsureExportDefaultTransformer
-	implements TypeScript.CustomTransformer {
+	implements TypeScript.CustomTransformer
+{
 	private context: TypeScript.TransformationContext
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context

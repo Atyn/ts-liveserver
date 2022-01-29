@@ -10,7 +10,8 @@ enum KEYNAME {
 Transpile CommonJS to ES6 module
 */
 export default class CommonJsTransformer
-	implements TypeScript.CustomTransformer {
+	implements TypeScript.CustomTransformer
+{
 	private context: TypeScript.TransformationContext
 	private exportsVariableMap: Record<string, string> = {}
 	private counter = 0
@@ -209,6 +210,7 @@ export default class CommonJsTransformer
 										TypeScript.factory.createNamedImports(
 											variableDeclaration.name.elements.map((bindingElement) =>
 												TypeScript.factory.createImportSpecifier(
+													false,
 													bindingElement.propertyName as TypeScript.Identifier,
 													bindingElement.name as TypeScript.Identifier,
 												),
@@ -477,7 +479,7 @@ export default class CommonJsTransformer
 					this.generateUniqueName(),
 				)
 				exportSpecifiers.push(
-					TypeScript.factory.createExportSpecifier(identifier, name),
+					TypeScript.factory.createExportSpecifier(false, identifier, name),
 				)
 				variableDeclarations.push(
 					TypeScript.factory.createVariableDeclaration(
@@ -491,12 +493,13 @@ export default class CommonJsTransformer
 					),
 				)
 			}
-			const exportDeclaration: TypeScript.ExportDeclaration = TypeScript.factory.createExportDeclaration(
-				undefined,
-				undefined,
-				false,
-				TypeScript.factory.createNamedExports(exportSpecifiers),
-			)
+			const exportDeclaration: TypeScript.ExportDeclaration =
+				TypeScript.factory.createExportDeclaration(
+					undefined,
+					undefined,
+					false,
+					TypeScript.factory.createNamedExports(exportSpecifiers),
+				)
 			statements.push(
 				TypeScript.factory.createVariableStatement(
 					undefined,

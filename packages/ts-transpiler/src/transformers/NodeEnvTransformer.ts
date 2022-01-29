@@ -17,7 +17,8 @@ const NODE_PROCESS_ENV: Record<string, string> = {
 Replaces process.env.NODE_ENV in code
 */
 export default class NodeEnvTransformer
-	implements TypeScript.CustomTransformer {
+	implements TypeScript.CustomTransformer
+{
 	private context: TypeScript.TransformationContext
 	constructor(context: TypeScript.TransformationContext) {
 		this.context = context
@@ -135,6 +136,7 @@ export default class NodeEnvTransformer
 					undefined,
 					TypeScript.factory.createNamedImports([
 						TypeScript.factory.createImportSpecifier(
+							false,
 							TypeScript.factory.createIdentifier(BUFFER_NAME),
 							TypeScript.factory.createIdentifier(BUFFER_NAME),
 						),
