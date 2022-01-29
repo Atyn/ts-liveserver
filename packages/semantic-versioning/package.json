@@ -8,18 +8,23 @@
 		"access": "restricted"
 	},
 	"bin": {
-		"semantic-versioning": ""
+		"semantic-versioning": "dist/cli.js"
 	},
 	"scripts": {
 		"build": "tsc --build",
-		"watch": "tsc --build --watch"
+		"watch": "tsc --build --watch",
+		"test:watch": "jest --watch",
+		"test:update-snapshot": "jest --updateSnapshot",
+		"test": "jest"
 	},
 	"devDependencies": {
 		"@types/jest": "^26.0.0",
 		"jest": "^26.0.1",
-		"ts-jest": "^26.1.0"
+		"ts-jest": "^26.1.0",
+		"@types/semver": "^7.3.9"
 	},
 	"dependencies": {
-		"typescript": "4.x.x"
+		"typescript": "4.x.x",
+		"semver": "^6.3.0"
 	}
 }
