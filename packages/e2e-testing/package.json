@@ -9,7 +9,7 @@
 		"test:e2e": "node ./dist/test-e2e.js"
 	},
 	"devDependencies": {
-		"puppeteer": "^9.0.0",
+		"puppeteer": "^13.3.2",
 		"@ts-liveserver/test-environment": "^0.0.0"
 	}
 }
