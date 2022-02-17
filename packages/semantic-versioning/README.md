@@ -2,7 +2,7 @@
 
 Utility for sematic versioning
 
-## Validate commits
+## Validate commits (e.g. in PRs)
 
 ```bash
 semantic-versioning validate-commits --require-task-id --require-version-type
@@ -21,6 +21,12 @@ Create file ".huskyrc.json" with the following content:
 }
 ```
 
+## Print release-notes
+
+```bash
+semantic-versioning print-release-notes
+```
+
 ## Get current latest release
 
 ```bash
@@ -31,12 +37,6 @@ semantic-versioning print-latest-version
 
 ```bash
 semantic-versioning print-next-version
-```
-
-## Print release-notes
-
-```bash
-semantic-versioning print-release-notes
 ```
 
 ## Print version-type

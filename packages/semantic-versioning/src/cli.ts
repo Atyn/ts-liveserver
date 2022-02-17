@@ -1,4 +1,3 @@
-import CommitParser from './CommitParser'
 import GitIntegrator from './GitIntegrator'
 import VersionUtility from './VersionUtility'
 
