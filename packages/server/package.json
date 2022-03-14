@@ -27,7 +27,7 @@
 		"express": "^4.17.1",
 		"serve-index": "^1.9.1",
 		"http-proxy": "^1.18.1",
-		"http-proxy-middleware": "2.0.0",
+		"http-proxy-middleware": "2.0.4",
 		"@ts-liveserver/express-middleware": "^0.0.0"
 	}
 }
