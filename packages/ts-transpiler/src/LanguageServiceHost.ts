@@ -9,7 +9,8 @@ type Options = {
 	transformers: TypeScript.CustomTransformers
 }
 export default class LanguageServiceHost
-	implements TypeScript.LanguageServiceHost {
+	implements TypeScript.LanguageServiceHost
+{
 	private dependencyResolver: DependencyResolver
 	private compilerOptions: TypeScript.CompilerOptions
 	private customTransformers?: TypeScript.CustomTransformers

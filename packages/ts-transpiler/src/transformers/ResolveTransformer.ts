@@ -2,7 +2,8 @@ import TypeScript from 'typescript'
 import IEsmDependencyResolver from '../types/IEsmDependencyResolver'
 
 export default class ResolveTransformer
-	implements TypeScript.CustomTransformer {
+	implements TypeScript.CustomTransformer
+{
 	private context: TypeScript.TransformationContext
 	private resolver: IEsmDependencyResolver
 	constructor(
@@ -42,6 +43,7 @@ export default class ResolveTransformer
 					node.modifiers,
 					node.importClause,
 					TypeScript.factory.createStringLiteral(resolveResult.path),
+					undefined,
 				)
 			}
 			if (
@@ -60,6 +62,7 @@ export default class ResolveTransformer
 					node.isTypeOnly,
 					node.exportClause,
 					TypeScript.factory.createStringLiteral(resolveResult.path),
+					undefined,
 				)
 			}
 			return node

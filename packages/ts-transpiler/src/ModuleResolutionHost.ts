@@ -1,7 +1,8 @@
 import TypeScript from 'typescript'
 
 export default class ModuleResolutionHost
-	implements TypeScript.ModuleResolutionHost {
+	implements TypeScript.ModuleResolutionHost
+{
 	fileExists = (fileName: string): boolean => {
 		return TypeScript.sys.fileExists(fileName)
 	}
